@@ -1,7 +1,6 @@
 package com.hsy.springboot.controller;
 
 import com.hsy.springboot.entity.Student;
-import com.hsy.springboot.entity.Teacher;
 import com.hsy.springboot.mapper.StudentMapper;
 import com.hsy.springboot.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;

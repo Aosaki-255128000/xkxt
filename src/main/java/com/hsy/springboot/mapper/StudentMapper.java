@@ -45,8 +45,6 @@ public interface StudentMapper {
 
     int update(Student student);
 
-
-
     @Delete("delete from student where id = #{id}")
     Integer deleteById(@Param("id") Integer id);
 }
