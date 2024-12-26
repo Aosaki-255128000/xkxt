@@ -33,7 +33,7 @@ public class AdminController {
     }
 
     @DeleteMapping("/{id}")
-    public Integer delete(@PathVariable Integer id) {return adminMapper.deleteById(id); }
+    public Integer delete(@PathVariable Integer id) { return adminMapper.deleteById(id); }
 
     @GetMapping("/page")
     public Map<String, Object> findPage(@RequestParam Integer pageNum,
