@@ -56,17 +56,25 @@ public class AdminController {
     @PostMapping("/login")
     public Map<String, Object> login(@RequestBody Admin admin) {
         Map<String, Object> result = new HashMap<>();
-        // 模拟数据库校验逻辑
-        if ("admin".equals(admin.getUsername()) && "password123".equals(admin.getPassword())) {
-            result.put("code", 200);
-            result.put("message", "登录成功");
-        } else {
-            result.put("code", 401);
-            result.put("message", "用户名或密码错误");
-        }
-        System.out.println("接收到的登录数据: " + admin);
-        return result;
 
+        // 从数据库中查询用户名对应的记录
+        Admin dbAdmin = adminMapper.findByUsernameAndRole(admin.getUsername(), admin.getRole());
+
+        if (dbAdmin != null) {
+            // 验证密码是否正确
+            if (dbAdmin.getPassword().equals(admin.getPassword())) {
+                result.put("code", 200);
+                result.put("message", "登录成功");
+            } else {
+                result.put("code", 401);
+                result.put("message", "密码错误");
+            }
+        } else {
+            result.put("code", 404);
+            result.put("message", "用户名不存在");
+        }
+
+        return result;
     }
 
 
