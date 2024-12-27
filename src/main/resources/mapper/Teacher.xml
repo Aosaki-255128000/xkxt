@@ -17,11 +17,14 @@
             <if test="title != null">
                 title = #{title},
             </if>
-            <if test="specialtyId != null">
-                specialtyId = #{specialtyId},
+            <if test="departmentId != null">
+                departmentId = #{departmentId},
             </if>
             <if test="role != null">
                 role = #{role},
+            </if>
+            <if test="birthDate != null">
+                birthDate = #{birthDate},
             </if>
         </set>
         <where>

@@ -23,4 +23,10 @@ public class TeacherService {
     // 查询所有教师信息
     public List<Teacher> list() { return teacherMapper.findAll(); }
 
+    public List<Teacher> findAllTeachersWithDepartment() { return teacherMapper.findAllTeachersWithDepartment(); }
+
+    public List<Teacher> findByDepartmentId(Integer departmentId) {
+        return teacherMapper.findByDepartmentId(departmentId);
+    }
+
 }

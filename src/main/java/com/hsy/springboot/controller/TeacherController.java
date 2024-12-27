@@ -41,7 +41,7 @@ public class TeacherController {
                                         @RequestParam(defaultValue = "") String name,
                                         @RequestParam(defaultValue = "") String sex,
                                         @RequestParam(defaultValue = "") String title,
-                                        @RequestParam(defaultValue = "") String specialtyId,
+                                        @RequestParam(required = false) Integer departmentId,
                                         @RequestParam(defaultValue = "") String role) {
 
         pageNum = (pageNum - 1) * pageSize;
@@ -50,11 +50,10 @@ public class TeacherController {
         name = "%" + name + "%";
         sex = "%" + sex + "%";
         title = "%" + title + "%";
-        specialtyId = "%" + specialtyId + "%";
         role = "%" + role + "%";
 
-        List<Teacher> data = teacherMapper.selectPage(pageNum, pageSize, username, name, sex, title, specialtyId, role);
-        Integer total = teacherMapper.selectTotal(username, name, sex, title, specialtyId, role);
+        List<Teacher> data = teacherMapper.selectPage(pageNum, pageSize, username, name, sex, title, role, departmentId);
+        Integer total = teacherMapper.selectTotal(username, name, sex, title, role, departmentId);
 
         Map<String, Object> res = new HashMap<>();
         res.put("data", data);

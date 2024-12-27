@@ -3,6 +3,8 @@ package com.hsy.springboot.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
+import java.time.LocalDate;
+
 @Data
 public class Teacher {
     private Integer id;
@@ -12,7 +14,9 @@ public class Teacher {
     private String name;
     private String sex;
     private String title;
-    private String specialtyId;
+    private Integer departmentId;
     private String role;
-    private String avatar;
+    private LocalDate birthDate;
+
+    private Department department;
 }
