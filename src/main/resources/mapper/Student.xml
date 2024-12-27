@@ -3,32 +3,18 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.hsy.springboot.mapper.StudentMapper">
     <update id="update">
-        update teacher
+        UPDATE student
         <set>
-            <if test="username != null">
-                username = #{username},
-            </if>
-            <if test="name != null">
-                name = #{name},
-            </if>
-            <if test="role != null">
-                role = #{role},
-            </if>
-            <if test="sex != null">
-                sex = #{sex},
-            </if>
-            <if test="code != null">
-                code = #{code},
-            </if>
-            <if test="collegeId != null">
-                collegeId = #{collegeId},
-            </if>
-            <if test="score != null">
-                score = #{score},
-            </if>
+            <if test="username != null">username = #{username},</if>
+            <if test="name != null">name = #{name},</if>
+            <if test="role != null">role = #{role},</if>
+            <if test="sex != null">sex = #{sex},</if>
+            <if test="code != null">code = #{code},</if>
+            <if test="collegeId != null">collegeId = #{collegeId},</if>
+            <if test="phone != null">phone = #{phone},</if>
+            <if test="birthDate != null">birthDate = #{birthDate},</if>
+            <if test="hometown != null">hometown = #{hometown},</if>
         </set>
-        <where>
-            id = #{id}
-        </where>
+        <where>id = #{id}</where>
     </update>
 </mapper>

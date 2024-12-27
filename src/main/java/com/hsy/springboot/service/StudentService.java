@@ -21,7 +21,12 @@ public class StudentService {
         }
     }
 
-    // 查询所有教师信息
     public List<Student> list() { return studentMapper.findAll(); }
+
+    public List<Student> findAllStudentsWithDepartment() { return studentMapper.findAllStudentsWithDepartment(); }
+
+    public List<Student> findByDepartmentId(Integer departmentId) {
+        return studentMapper.findByDepartmentId(departmentId);
+    }
 
 }

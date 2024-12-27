@@ -37,8 +37,7 @@ public class StudentController {
                                         @RequestParam(defaultValue = "") String role,
                                         @RequestParam(defaultValue = "") String sex,
                                         @RequestParam(defaultValue = "") String code,
-                                        @RequestParam(required = false) Integer collegeId,
-                                        @RequestParam(required = false) Integer score) {
+                                        @RequestParam(required = false) Integer collegeId) {
 
         pageNum = (pageNum - 1) * pageSize;
 
@@ -48,8 +47,8 @@ public class StudentController {
         sex = "%" + sex + "%";
         code = "%" + code + "%";
 
-        List<Student> data = studentMapper.selectPage(pageNum, pageSize, username, name, role, sex, code, collegeId, score);
-        Integer total = studentMapper.selectTotal(username, name, role, sex, code, collegeId, score);
+        List<Student> data = studentMapper.selectPage(pageNum, pageSize, username, name, role, sex, code, collegeId);
+        Integer total = studentMapper.selectTotal(username, name, role, sex, code, collegeId);
 
         Map<String, Object> res = new HashMap<>();
         res.put("data", data);
