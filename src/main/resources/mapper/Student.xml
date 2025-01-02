@@ -18,3 +18,4 @@
         <where>id = #{id}</where>
     </update>
 </mapper>
+

@@ -9,7 +9,7 @@ public interface TeacherMapper {
     @Select("select * from teacher")
     List<Teacher> findAll();
 
-    @Insert("INSERT into teacher(username, password, name, sex, title, specialtyId, role, birthDate) VALUES (#{username}, #{password}, #{name}, #{sex}, #{title}, #{specialtyId}, #{role}, #{birthDate})")
+    @Insert("INSERT into teacher(username, password, name, sex, title, departmentId, role, birthDate) VALUES (#{username}, #{password}, #{name}, #{sex}, #{title}, #{departmentId}, #{role}, #{birthDate})")
     int insert(Teacher teacher);
 
     int update(Teacher teacher);
