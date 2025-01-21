@@ -15,7 +15,7 @@ public interface DepartmentMapper {
     int insert(Department department);
 
     @Update("update department set name = #{department.name} where id = #{department.id}")
-    int update(@Param("department") Department department);
+    int update(Department department);
 
     @Delete("delete from department where id =#{id}")
     Integer deleteById(@Param("id") Integer id);

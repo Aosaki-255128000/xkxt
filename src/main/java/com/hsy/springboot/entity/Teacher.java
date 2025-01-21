@@ -14,6 +14,7 @@ public class Teacher {
     private String name;
     private String sex;
     private String title;
+    private String jobNumber;
     private Integer departmentId;
     private String role;
     private LocalDate birthDate;

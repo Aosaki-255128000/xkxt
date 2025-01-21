@@ -23,10 +23,5 @@ public class StudentService {
 
     public List<Student> list() { return studentMapper.findAll(); }
 
-    public List<Student> findAllStudentsWithDepartment() { return studentMapper.findAllStudentsWithDepartment(); }
-
-    public List<Student> findByDepartmentId(Integer departmentId) {
-        return studentMapper.findByDepartmentId(departmentId);
-    }
 
 }

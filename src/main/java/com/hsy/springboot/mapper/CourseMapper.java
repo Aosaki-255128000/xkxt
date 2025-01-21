@@ -8,7 +8,7 @@ import java.util.List;
 @Mapper
 public interface CourseMapper {
 
-    @Select("select * from course")
+    @Select("select courseId, name from course")
     List<Course> findAll();
 
     @Insert("insert into course(courseId, name, credit, creditHour, departmentId) VALUES (#{courseId}, #{name}, #{credit}, #{creditHour}, #{dptId})")

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hsy.springboot.mapper.OpenCourseMapper">
+    <update id="update">
+        update opencourse
+        <set>
+            <if test="semester != null">
+                semester = #{semester},
+            </if>
+            <if test="courseId != null">
+                courseId = #{courseId},
+            </if>
+            <if test="jobNumber != null">
+                jobNumber = #{jobNumber},
+            </if>
+            <if test="classTime != null">
+                classTime = #{classTime}
+            </if>
+        </set>
+        <where>
+            id = #{id}
+        </where>
+    </update>
+</mapper>

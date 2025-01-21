@@ -6,10 +6,10 @@ import java.util.List;
 
 @Mapper
 public interface TeacherMapper {
-    @Select("select * from teacher")
+    @Select("select jobNumber, name from teacher")
     List<Teacher> findAll();
 
-    @Insert("INSERT into teacher(username, password, name, sex, title, departmentId, role, birthDate) VALUES (#{username}, #{password}, #{name}, #{sex}, #{title}, #{departmentId}, #{role}, #{birthDate})")
+    @Insert("INSERT into teacher(username, password, name, sex, title, jobNumber, departmentId, role, birthDate) VALUES (#{username}, #{password}, #{name}, #{sex}, #{title}, #{jobNumber}, #{departmentId}, #{role}, #{birthDate})")
     int insert(Teacher teacher);
 
     int update(Teacher teacher);
@@ -17,7 +17,7 @@ public interface TeacherMapper {
     @Delete("delete from teacher where id = #{id}")
     Integer deleteById(@Param("id") Integer id);
 
-    // 查询所有学生及其院系信息
+    // 查询所有教师及其院系信息
     @Select({
             "<script>",
             "SELECT t.*, d.id AS departmentId, d.name AS departmentName FROM teacher t",
@@ -26,12 +26,13 @@ public interface TeacherMapper {
             "AND t.name LIKE #{name}",
             "AND t.sex LIKE #{sex}",
             "AND t.title LIKE #{title}",
+            "AND t.jobNumber LIKE #{jobNumber}",
             "AND t.role LIKE #{role}",
             "<if test='departmentId != null'> AND t.departmentId = #{departmentId}</if>",
             "LIMIT #{pageNum}, #{pageSize}",
             "</script>"
     })
-    List<Teacher> selectPage(Integer pageNum, Integer pageSize, String username, String name, String sex, String title, String role, Integer departmentId);
+    List<Teacher> selectPage(Integer pageNum, Integer pageSize, String username, String name, String sex, String title, String jobNumber, String role, Integer departmentId);
 
 
     @Select({
@@ -42,14 +43,15 @@ public interface TeacherMapper {
             "AND t.name LIKE #{name}",
             "AND t.sex LIKE #{sex}",
             "AND t.title LIKE #{title}",
+            "AND t.jobNumber LIKE #{jobNumber}",
             "AND t.role LIKE #{role}",
             "<if test='departmentId != null'> AND t.departmentId = #{departmentId}</if>",
             "</script>"
     })
-    Integer selectTotal(String username, String name, String sex, String title, String role, Integer departmentId);
+    Integer selectTotal(String username, String name, String sex, String title, String jobNumber, String role, Integer departmentId);
 
     // 关联查询：获取所有课程及对应的院系信息
-    @Select("SELECT t.id, t.username, t.name, t.sex, t.title, t.departmentId, t.role, t.birthDate " +
+    @Select("SELECT t.id, t.username, t.name, t.sex, t.title, t.jobNumber, t.departmentId, t.role, t.birthDate " +
             "d.id AS department_id, d.name AS department_name, d.address AS department_address, d.phone AS department_phone " +
             "FROM teaher t " +
             "LEFT JOIN department d ON t.departmentId = d.id")
@@ -59,6 +61,7 @@ public interface TeacherMapper {
             @Result(property = "name", column = "name"),
             @Result(property = "sex", column = "sex"),
             @Result(property = "title", column = "title"),
+            @Result(property = "jobNumber", column = "JobNumber"),
             @Result(property = "departmentId", column = "departmentId"),
             @Result(property = "role", column = "role"),
             @Result(property = "birthDate", column = "birthDate"),

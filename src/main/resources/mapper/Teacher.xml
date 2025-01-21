@@ -17,6 +17,9 @@
             <if test="title != null">
                 title = #{title},
             </if>
+            <if test="jobNumber != null">
+                jobNumber = #{jobNumber},
+            </if>
             <if test="departmentId != null">
                 departmentId = #{departmentId},
             </if>
