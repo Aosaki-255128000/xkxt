@@ -56,4 +56,5 @@ public class OpenCourseController {
     @DeleteMapping("/{id}")
     public Integer delete(@PathVariable Integer id) { return openCourseMapper.deleteById(id); }
 
+
 }

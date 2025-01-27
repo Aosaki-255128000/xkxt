@@ -77,4 +77,7 @@ public interface TeacherMapper {
     @Select("select * from teacher where departmentId = #{departmentId}")
     List<Teacher> findByDepartmentId(Integer departmentId);
 
+    @Select("select * from teacher where username = #{username} and role = #{role}")
+    Teacher findByTeachernameAndRole(@Param("username") String username, @Param("role") String role);
+
 }

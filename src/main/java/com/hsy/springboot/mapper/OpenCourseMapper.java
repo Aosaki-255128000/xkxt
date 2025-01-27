@@ -24,4 +24,5 @@ public interface OpenCourseMapper {
     @Select({"select count(*) from opencourse where semester like #{semester} and courseId like #{courseId} and jobNumber like #{jobNumber} and classTime like #{classTime}"})
     Integer selectTotal(String semester, String courseId, String jobNumber, String classTime);
 
+
 }

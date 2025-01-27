@@ -67,4 +67,27 @@ public class TeacherController {
     @DeleteMapping("/{id}")
     public Integer delete(@PathVariable Integer id) { return teacherMapper.deleteById(id); }
 
+    @PostMapping("/login")
+    public Map<String, Object> login(@RequestBody Teacher teacher) {
+        Map<String, Object> result = new HashMap<>();
+        Teacher dbTeacher = teacherMapper.findByTeachernameAndRole(teacher.getUsername(), teacher.getRole());
+
+        if(dbTeacher != null) {
+            System.out.println("DB Password: " + dbTeacher.getPassword());
+            System.out.println("Input Password: " + teacher.getPassword());
+
+            if (dbTeacher.getPassword().equals(teacher.getPassword())) {
+                result.put("code", 200);
+                result.put("message", "登陆成功");
+            } else {
+                result.put("code", 401);
+                result.put("message", "密码错误");
+            }
+        } else {
+            result.put("code", 404);
+            result.put("message", "用户名不存在");
+        }
+        return result;
+    }
+
 }

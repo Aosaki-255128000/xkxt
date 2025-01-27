@@ -9,7 +9,6 @@ import java.time.LocalDate;
 public class Student {
     private Integer id;
     private String username;
-    @JsonIgnore
     private String password;
     private String name;
     private String role;

@@ -29,4 +29,8 @@ public class TeacherService {
         return teacherMapper.findByDepartmentId(departmentId);
     }
 
+    public Teacher findByTeachernameAndRole(String username, String role) {
+        return teacherMapper.findByTeachernameAndRole(username, role);
+    }
+
 }

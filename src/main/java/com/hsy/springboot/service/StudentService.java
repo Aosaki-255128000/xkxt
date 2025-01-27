@@ -23,5 +23,8 @@ public class StudentService {
 
     public List<Student> list() { return studentMapper.findAll(); }
 
+    public Student findByUsernameAndRole(String username, String role) {
+        return studentMapper.findByStudentnameAndRole(username, role);
+    }
 
 }

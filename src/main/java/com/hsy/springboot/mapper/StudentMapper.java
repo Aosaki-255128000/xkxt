@@ -1,5 +1,6 @@
 package com.hsy.springboot.mapper;
 
+import com.hsy.springboot.entity.Admin;
 import com.hsy.springboot.entity.Student;
 import org.apache.ibatis.annotations.*;
 
@@ -49,31 +50,11 @@ public interface StudentMapper {
     })
     Integer selectTotal(String username, String name, String role, String sex, String code, Integer collegeId);
 
-    // 关联查询：获取所有课程及对应的院系信息
-//    @Select("SELECT s.id, s.username, s.name, s.role, s.sex, s.code, s.collegeId, s.phone, s.birthDate, s.hometown " +
-//            "d.id AS department_id, d.name AS department_name, d.address AS department_address, d.phone AS department_phone " +
-//            "FROM student s " +
-//            "LEFT JOIN department d ON s.collegeId = d.id")
-//    @Results({
-//            @Result(property = "id", column = "id"),
-//            @Result(property = "username", column = "username"),
-//            @Result(property = "name", column = "name"),
-//            @Result(property = "role", column = "role"),
-//            @Result(property = "sex", column = "sex"),
-//            @Result(property = "code", column = "code"),
-//            @Result(property = "collegeId", column = "collegeId"),
-//            @Result(property = "phone", column = "phone"),
-//            @Result(property = "birthDate", column = "birthDate"),
-//            @Result(property = "hometown", column = "hometown"),
-//            // 嵌套的 Department 对象映射
-//            @Result(property = "department.id", column = "department_id"),
-//            @Result(property = "department.name", column = "department_name"),
-//            @Result(property = "department.address", column = "department_address"),
-//            @Result(property = "department.phone", column = "department_phone")
-//    })
-//    List<Student> findAllStudentsWithDepartment();
-
     @Select("select * from student where collegeId = #{collegeId}")
     List<Student> findByDepartmentId(Integer departmentId);
+
+    @Select("SELECT * FROM student WHERE username = #{username} AND role = #{role}")
+    Student findByStudentnameAndRole(@Param("username") String username, @Param("role") String role);
+
 }
 

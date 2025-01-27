@@ -61,6 +61,9 @@ public class AdminController {
         Admin dbAdmin = adminMapper.findByUsernameAndRole(admin.getUsername(), admin.getRole());
 
         if (dbAdmin != null) {
+
+            System.out.println("DB Password: " + dbAdmin.getPassword());
+            System.out.println("Input Password: " + admin.getPassword());
             // 验证密码是否正确
             if (dbAdmin.getPassword().equals(admin.getPassword())) {
                 result.put("code", 200);
