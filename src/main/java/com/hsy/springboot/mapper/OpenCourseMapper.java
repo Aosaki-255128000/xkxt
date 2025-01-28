@@ -24,5 +24,34 @@ public interface OpenCourseMapper {
     @Select({"select count(*) from opencourse where semester like #{semester} and courseId like #{courseId} and jobNumber like #{jobNumber} and classTime like #{classTime}"})
     Integer selectTotal(String semester, String courseId, String jobNumber, String classTime);
 
+    @Select({
+            "SELECT * FROM opencourse",
+            "WHERE semester LIKE #{semester}",
+            "AND courseId LIKE #{courseId}",
+            "AND jobNumber = #{jobNumber}", // 精确匹配
+            "AND classTime LIKE #{classTime}",
+            "LIMIT #{pageNum}, #{pageSize}"
+    })
+    List<OpenCourse> selectTeacherPage(
+            @Param("pageNum") Integer pageNum,
+            @Param("pageSize") Integer pageSize,
+            @Param("semester") String semester,
+            @Param("courseId") String courseId,
+            @Param("jobNumber") String jobNumber,
+            @Param("classTime") String classTime
+    );
 
+    @Select({
+            "SELECT COUNT(*) FROM opencourse",
+            "WHERE semester LIKE #{semester}",
+            "AND courseId LIKE #{courseId}",
+            "AND jobNumber = #{jobNumber}",
+            "AND classTime LIKE #{classTime}"
+    })
+    Integer selectTeacherTotal(
+            @Param("semester") String semester,
+            @Param("courseId") String courseId,
+            @Param("jobNumber") String jobNumber,
+            @Param("classTime") String classTime
+    );
 }
