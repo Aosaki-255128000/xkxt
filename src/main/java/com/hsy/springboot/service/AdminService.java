@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class AdminService {
@@ -24,8 +25,8 @@ public class AdminService {
 
     public List<Admin> list() { return adminMapper.findAll(); }
 
-    public Admin findByUsernameAndRole(String username, String role) {
-        return adminMapper.findByUsernameAndRole(username, role);
+    public Admin login(Admin admin) {
+        return adminMapper.findByUsernameAndPassword(admin);
     }
 
 }

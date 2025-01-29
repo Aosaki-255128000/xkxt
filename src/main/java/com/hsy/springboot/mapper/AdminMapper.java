@@ -26,7 +26,8 @@ public interface AdminMapper {
     @Select("select count(*) from admin where username like #{username} and role like #{role}")
     Integer selectTotal(String username, String role);
 
-    @Select("SELECT * FROM admin WHERE username = #{username} AND role = #{role}")
-    Admin findByUsernameAndRole(@Param("username") String username, @Param("role") String role);
+    @Select("SELECT * FROM admin WHERE username = #{username} AND password = #{password}")
+    Admin findByUsernameAndPassword(Admin admin);
+
 
 }

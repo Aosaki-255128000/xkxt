@@ -58,7 +58,7 @@ public class AdminController {
         Map<String, Object> result = new HashMap<>();
 
         // 从数据库中查询用户名对应的记录
-        Admin dbAdmin = adminMapper.findByUsernameAndRole(admin.getUsername(), admin.getRole());
+        Admin dbAdmin = adminService.login(admin);
 
         if (dbAdmin != null) {
 
@@ -79,7 +79,4 @@ public class AdminController {
 
         return result;
     }
-
-
-
 }
