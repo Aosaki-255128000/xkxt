@@ -26,7 +26,13 @@ public class AdminService {
     public List<Admin> list() { return adminMapper.findAll(); }
 
     public Admin login(Admin admin) {
-        return adminMapper.findByUsernameAndPassword(admin);
+        Admin dbAdmin = adminMapper.findByUsername(admin.getUsername());
+        // 判断用户是否存在
+        if (dbAdmin != null && dbAdmin.getPassword().equals(admin.getPassword())) {
+            return dbAdmin; // 认证成功
+        }
+
+        return null; // 认证失败
     }
 
 }

@@ -29,5 +29,7 @@ public interface AdminMapper {
     @Select("SELECT * FROM admin WHERE username = #{username} AND password = #{password}")
     Admin findByUsernameAndPassword(Admin admin);
 
+    @Select("SELECT * FROM admin WHERE username = #{username}")
+    Admin findByUsername(String username);
 
 }

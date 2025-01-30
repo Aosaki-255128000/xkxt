@@ -1,9 +1,11 @@
 package com.hsy.springboot.controller;
 
 
+import com.hsy.springboot.common.Result;
 import com.hsy.springboot.entity.Admin;
 import com.hsy.springboot.mapper.AdminMapper;
 import com.hsy.springboot.service.AdminService;
+import com.hsy.springboot.utils.JWTUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -54,29 +56,30 @@ public class AdminController {
     }
 
     @PostMapping("/login")
-    public Map<String, Object> login(@RequestBody Admin admin) {
-        Map<String, Object> result = new HashMap<>();
-
-        // 从数据库中查询用户名对应的记录
+    public Result login(@RequestBody Admin admin) {
+        // 查询数据库
         Admin dbAdmin = adminService.login(admin);
 
         if (dbAdmin != null) {
+            // 生成JWT令牌
+            Map<String, Object> claims = new HashMap<>();
+            claims.put("id", dbAdmin.getId());
+            claims.put("username", dbAdmin.getUsername());
+            claims.put("role", "admin"); // 角色信息
 
-            System.out.println("DB Password: " + dbAdmin.getPassword());
-            System.out.println("Input Password: " + admin.getPassword());
-            // 验证密码是否正确
-            if (dbAdmin.getPassword().equals(admin.getPassword())) {
-                result.put("code", 200);
-                result.put("message", "登录成功");
-            } else {
-                result.put("code", 401);
-                result.put("message", "密码错误");
-            }
-        } else {
-            result.put("code", 404);
-            result.put("message", "用户名不存在");
+            String token = JWTUtils.generateToken(claims);
+
+            // 打印 JWT
+            System.out.println("Generated JWT: " + token);
+
+            // 返回登录成功信息 & Token
+            return Result.success()
+                    .message("登录成功")
+                    .data("token", token);
         }
 
-        return result;
+        // 失败返回
+        return Result.error().message("用户名或密码错误");
     }
+
 }
