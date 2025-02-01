@@ -32,6 +32,14 @@ public class Result {
         return result;
     }
 
+    public static Result errorPrint(String message) {
+        Result result = new Result();
+        result.setCode(401); // 401 表示未登录或认证失败
+        result.setMessage(message);
+        return result;
+    }
+
+
     // 链式调用方法
     public Result code(Integer code) {
         this.code = code;

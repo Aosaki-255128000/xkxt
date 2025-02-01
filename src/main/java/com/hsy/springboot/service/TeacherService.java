@@ -33,4 +33,12 @@ public class TeacherService {
         return teacherMapper.findByUsername(username);
     }
 
+    public Teacher login(Teacher teacher) {
+        Teacher dbTeacher = teacherMapper.findByUsername(teacher.getUsername());
+        if(dbTeacher != null && dbTeacher.getPassword().equals(teacher.getPassword())) {
+            return dbTeacher;
+        }
+        return null;
+    }
+
 }

@@ -53,13 +53,30 @@ public class JWTUtils {
         return JWT.require(Algorithm.HMAC256(SING)).build().verify(token);
     }
 
-    /**
-     * 获取token信息方法
-     */
-    /*public static DecodedJWT getTokenInfo(String token){
-        DecodedJWT verify = JWT.require(Algorithm.HMAC256(SING)).build().verify(token);
-        return verify;
-    }*/
+    public static Map<String, Object> parseToken(String token) {
+        Map<String, Object> claims = new HashMap<>();
+        try {
+            DecodedJWT decodedJWT = verifyToken(token); // 先验证合法性
+
+            decodedJWT.getClaims().forEach((key, value) -> {
+                if (value.asString() != null) {
+                    claims.put(key, value.asString());
+                } else if (value.asInt() != null) {
+                    claims.put(key, value.asInt());
+                } else if (value.asLong() != null) {
+                    claims.put(key, value.asLong());
+                } else if (value.asBoolean() != null) {
+                    claims.put(key, value.asBoolean());
+                } else if (value.asDouble() != null) {
+                    claims.put(key, value.asDouble());
+                }
+            });
+
+        } catch (Exception e) {
+            throw new RuntimeException("解析Token失败: " + e.getMessage(), e);
+        }
+        return claims;
+    }
 }
 
 

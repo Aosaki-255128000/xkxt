@@ -22,4 +22,17 @@
             id = #{id}
         </where>
     </update>
+
+    <select id="selectCoursesByJobNumber" resultType="com.hsy.springboot.entity.OpenCourse">
+        SELECT * FROM opencourse
+        WHERE jobNumber = #{jobNumber}
+        LIMIT #{pageNum}, #{pageSize}
+    </select>
+
+    <select id="countCourses" resultType="int">
+        SELECT COUNT(*) FROM opencourse
+        WHERE jobNumber = #{jobNumber}
+    </select>
+
+
 </mapper>

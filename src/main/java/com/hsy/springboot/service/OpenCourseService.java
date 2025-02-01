@@ -24,4 +24,11 @@ public class OpenCourseService {
 
     public List<OpenCourse> list() { return openCourseMapper.findAll(); }
 
+    public List<OpenCourse> findCoursesByJobNumber(String jobNumber, Integer pageNum, Integer pageSize, String semester, String courseId, String classTime) {
+        return openCourseMapper.selectCoursesByJobNumber(jobNumber, pageNum, pageSize, semester, courseId, classTime);
+    }
+
+    public int countCoursesByJobNumber(String jobNumber, String semester, String courseId, String classTime) {
+        return openCourseMapper.countCourses(jobNumber, semester, courseId, classTime);
+    }
 }

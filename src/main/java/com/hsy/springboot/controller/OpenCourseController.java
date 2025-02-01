@@ -1,12 +1,11 @@
 package com.hsy.springboot.controller;
 
 
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.hsy.springboot.entity.OpenCourse;
-import com.hsy.springboot.entity.Teacher;
 import com.hsy.springboot.mapper.OpenCourseMapper;
 import com.hsy.springboot.service.OpenCourseService;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
+import com.hsy.springboot.utils.JWTUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -61,47 +60,27 @@ public class OpenCourseController {
 
     @GetMapping("/teacherPage")
     public Map<String, Object> findTeacherPage(
+            @RequestHeader(value = "token") String token,
             @RequestParam Integer pageNum,
             @RequestParam Integer pageSize,
             @RequestParam(defaultValue = "") String semester,
             @RequestParam(defaultValue = "") String courseId,
-            @RequestParam(defaultValue = "") String classTime,
-            HttpServletRequest request) { // 通过请求对象获取Session
+            @RequestParam(defaultValue = "") String classTime) {
 
-        // 从Session中获取当前登录教师信息（需确保登录时已存入Session）
-        HttpSession session = request.getSession(false);
-
-        if (session == null) {
-            System.err.println("ERROR: 请求未携带有效Session");
-            throw new RuntimeException("请先登录");
-        }
-
-        Teacher teacher = (Teacher) session.getAttribute("teacher");
-        System.out.println("当前SessionID: " + session.getId());
-        System.out.println("Session中的教师信息: " + teacher);
-
-        // 提取教师工号（需确保登录逻辑已正确设置Session）
-        String jobNumber = teacher.getJobNumber();
-
-        // 分页参数处理
         pageNum = (pageNum - 1) * pageSize;
-        semester = "%" + semester + "%";
-        courseId = "%" + courseId + "%";
-        classTime = "%" + classTime + "%";
 
-        // 使用精确匹配教师工号查询
-        List<OpenCourse> data = openCourseMapper.selectTeacherPage(
-                pageNum, pageSize, semester, courseId, jobNumber, classTime
-        );
-        Integer total = openCourseMapper.selectTeacherTotal(
-                semester, courseId, jobNumber, classTime
-        );
+        // 解析 token 获取教师工号
+        DecodedJWT decodedJWT = JWTUtils.verifyToken(token);
+        String jobNumber = decodedJWT.getClaim("jobNumber").asString();
 
-        Map<String, Object> res = new HashMap<>();
-        res.put("data", data);
-        res.put("total", total);
-        return res;
+        // 查询该教师的课程信息
+        Map<String, Object> result = new HashMap<>();
+        List<OpenCourse> courses = openCourseService.findCoursesByJobNumber(jobNumber, pageNum, pageSize, semester, courseId, classTime);
+        int total = openCourseService.countCoursesByJobNumber(jobNumber, semester, courseId, classTime);
+
+        result.put("data", courses);
+        result.put("total", total);
+        return result;
     }
-
 
 }
