@@ -50,4 +50,8 @@ public interface CourseSelectionMapper {
                         @Param("courseId") String courseId, @Param("jobNumber") String jobNumber,
                         @Param("usualPerformance") Integer usualPerformance,
                         @Param("testScore") Integer testScore, @Param("totalScore") Integer totalScore);
+
+    List<CourseSelection> selectSelectionsByJobNumber(String jobNumber, Integer pageNum, Integer pageSize, String studentId, String semester, String courseId, Integer usualPerformance, Integer testScore, Integer totalScore);
+
+    int countSelections(String jobNumber, String studentId, String semester, String courseId, Integer usualPerformance, Integer testScore, Integer totalScore);
 }
