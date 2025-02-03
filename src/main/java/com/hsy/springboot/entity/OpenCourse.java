@@ -10,6 +10,8 @@ public class OpenCourse {
     private String jobNumber;
     private String classTime;
 
+    private String courseName;
+
     private Teacher teacher;
     private Course course;
 }

@@ -56,5 +56,7 @@ public interface StudentMapper {
     @Select("SELECT * FROM student WHERE username = #{username} AND role = #{role}")
     Student findByStudentnameAndRole(@Param("username") String username, @Param("role") String role);
 
+    @Select("select * from student where username = #{username}")
+    Student findByUsername(String username);
 }
 

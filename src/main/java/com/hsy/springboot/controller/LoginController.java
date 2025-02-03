@@ -2,8 +2,10 @@ package com.hsy.springboot.controller;
 
 import com.hsy.springboot.common.Result;
 import com.hsy.springboot.entity.Admin;
+import com.hsy.springboot.entity.Student;
 import com.hsy.springboot.entity.Teacher;
 import com.hsy.springboot.service.AdminService;
+import com.hsy.springboot.service.StudentService;
 import com.hsy.springboot.service.TeacherService;
 import com.hsy.springboot.utils.JWTUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +26,9 @@ public class LoginController {
 
     @Autowired
     private TeacherService teacherService;
+
+    @Autowired
+    private StudentService studentService;
 
     @PostMapping("/admin/login")
     public Result loginAdmin(@RequestBody Admin admin) {
@@ -46,9 +51,6 @@ public class LoginController {
     }
 
 
-
-
-
     @PostMapping("/teacher/login")
     public Result loginTeacher(@RequestBody Teacher teacher) {
         log.info("教师登录：{}", teacher); // 修正日志占位符
@@ -69,7 +71,31 @@ public class LoginController {
                     .data("token", jwt) // 返回 Token
                     .data("name", teacher1.getName());
         }
-
         return Result.error();
     }
+
+
+    @PostMapping("/student/login")
+    public Result loginStudent(@RequestBody Student student) {
+        log.info("学生登录：{}", student);
+        Student student1 = studentService.login(student);
+
+        if (student1 != null) {
+            Map<String, Object> claims = new HashMap<>();
+            claims.put("id", student1.getId());
+            claims.put("username", student1.getUsername());
+            claims.put("role", "student"); // 添加角色信息
+            claims.put("code", student1.getCode());
+            claims.put("name", student1.getName());
+
+
+            String jwt = JWTUtils.generateToken(claims);
+            System.out.println("Generated JWT: " + jwt );
+            return Result.success()
+                    .data("token", jwt) // 返回 Token
+                    .data("name", student1.getName());
+        }
+        return Result.error();
+    }
+
 }

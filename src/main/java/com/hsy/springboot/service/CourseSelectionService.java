@@ -22,11 +22,48 @@ public class CourseSelectionService {
 
     public List<CourseSelection> list() { return courseSelectionMapper.findAll(); }
 
-    public List<CourseSelection> findSelectionsByJobNumber(String jobNumber, Integer pageNum, Integer pageSize, String studentId, String semester, String courseId, Integer usualPerformance, Integer testScore, Integer totalScore) {
-        return courseSelectionMapper.selectSelectionsByJobNumber(jobNumber, pageNum, pageSize, studentId, semester, courseId, usualPerformance, testScore, totalScore);
+    public List<CourseSelection> findSelectionsByJobNumber(
+            String jobNumber,
+            Integer pageNum,
+            Integer pageSize,
+            String studentId,
+            String semester,
+            String courseId,
+            Integer usualPerformance,
+            Integer testScore,
+            Integer totalScore)
+    {
+        return courseSelectionMapper.selectSelectionsByJobNumber(
+                jobNumber, pageNum, pageSize,
+                studentId, semester, courseId,
+                usualPerformance, testScore, totalScore
+        );
     }
 
     public int countSelectionsByJobNumber(String jobNumber, String studentId, String semester, String courseId, Integer usualPerformance, Integer testScore, Integer totalScore) {
-        return courseSelectionMapper.countSelections(jobNumber, studentId, semester, courseId, usualPerformance, testScore, totalScore);
+        return courseSelectionMapper.countSelectionsTeacher(jobNumber, studentId, semester, courseId, usualPerformance, testScore, totalScore);
     }
+
+    public List<CourseSelection> findSelectionsByStudentId(
+            String studentId,
+            Integer pageNum,
+            Integer pageSize,
+            String jobNumber,
+            String semester,
+            String courseId,
+            Integer usualPerformance,
+            Integer testScore,
+            Integer totalScore)
+    {
+        return courseSelectionMapper.selectSelectionsByStudentId(
+                studentId, pageNum, pageSize,
+                jobNumber, semester, courseId,
+                usualPerformance, testScore, totalScore
+        );
+    }
+
+    public int countSelectionsByStudentId(String jobNumber, String studentId, String semester, String courseId, Integer usualPerformance, Integer testScore, Integer totalScore) {
+        return courseSelectionMapper.countSelectionsStudent(studentId, jobNumber, semester, courseId, usualPerformance, testScore, totalScore);
+    }
+
 }

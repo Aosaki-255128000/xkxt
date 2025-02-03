@@ -89,5 +89,33 @@ public class CourseSelectionController {
         return result;
     }
 
+    @GetMapping("/studentScore")
+    public Map<String, Object> findStudentScore(
+            @RequestHeader(value = "token") String token,
+            @RequestParam Integer pageNum,
+            @RequestParam Integer pageSize,
+            @RequestParam(defaultValue = "") String jobNumber,
+            @RequestParam(defaultValue = "") String semester,
+            @RequestParam(defaultValue = "") String courseId,
+            @RequestParam(required = false) Integer usualPerformance,
+            @RequestParam(required = false) Integer testScore,
+            @RequestParam(required = false) Integer totalScore){
+
+        pageNum = (pageNum - 1) * pageSize;
+
+        // 解析 token 获取学号
+        DecodedJWT decodedJWT = JWTUtils.verifyToken(token);
+        String studentId = decodedJWT.getClaim("code").asString();
+
+        // 查询该教师的选课信息
+        Map<String, Object> result = new HashMap<>();
+        List<CourseSelection> courseSelections = courseSelectionService.findSelectionsByStudentId(studentId, pageNum, pageSize, jobNumber, semester, courseId, usualPerformance, testScore, totalScore);
+        int total = courseSelectionService.countSelectionsByStudentId(studentId, jobNumber, semester, courseId, usualPerformance, testScore, totalScore);
+
+        result.put("data", courseSelections);
+        result.put("total", total);
+        return result;
+    }
+
 
 }

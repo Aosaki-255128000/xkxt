@@ -24,12 +24,25 @@
     </update>
 
     <select id="selectCoursesByJobNumber" resultType="com.hsy.springboot.entity.OpenCourse">
-        SELECT * FROM opencourse
-        WHERE jobNumber = #{jobNumber}
+        SELECT
+            oc.*,
+            c.name AS courseName
+        FROM opencourse oc
+        LEFT JOIN course c ON oc.courseId = c.courseId
+        WHERE oc.jobNumber = #{jobNumber}
+        <if test="semester != null and semester != ''">
+            AND oc.semester = #{semester}
+        </if>
+        <if test="courseId != null and courseId != ''">
+            AND oc.courseId = #{courseId}
+        </if>
+        <if test="classTime != null and classTime != ''">
+            AND oc.classTime = #{classTime}
+        </if>
         LIMIT #{pageNum}, #{pageSize}
     </select>
 
-    <select id="countCourses" resultType="int">
+    <select id="countCoursesTeacher" resultType="int">
         SELECT COUNT(*) FROM opencourse
         WHERE jobNumber = #{jobNumber}
     </select>

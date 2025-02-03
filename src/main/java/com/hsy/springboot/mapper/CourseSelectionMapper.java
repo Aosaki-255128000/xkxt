@@ -51,7 +51,30 @@ public interface CourseSelectionMapper {
                         @Param("usualPerformance") Integer usualPerformance,
                         @Param("testScore") Integer testScore, @Param("totalScore") Integer totalScore);
 
-    List<CourseSelection> selectSelectionsByJobNumber(String jobNumber, Integer pageNum, Integer pageSize, String studentId, String semester, String courseId, Integer usualPerformance, Integer testScore, Integer totalScore);
+    List<CourseSelection> selectSelectionsByJobNumber(
+            @Param("jobNumber") String jobNumber,
+            @Param("pageNum") Integer pageNum,
+            @Param("pageSize") Integer pageSize,
+            @Param("studentId") String studentId,
+            @Param("semester") String semester,
+            @Param("courseId") String courseId,
+            @Param("usualPerformance") Integer usualPerformance,
+            @Param("testScore") Integer testScore,
+            @Param("totalScore") Integer totalScore);
 
-    int countSelections(String jobNumber, String studentId, String semester, String courseId, Integer usualPerformance, Integer testScore, Integer totalScore);
+    List<CourseSelection> selectSelectionsByStudentId(
+            @Param("studentId") String studentId,
+            @Param("pageNum") Integer pageNum,
+            @Param("pageSize") Integer pageSize,
+            @Param("jobNumber") String jobNumber,
+            @Param("semester") String semester,
+            @Param("courseId") String courseId,
+            @Param("usualPerformance") Integer usualPerformance,
+            @Param("testScore") Integer testScore,
+            @Param("totalScore") Integer totalScore);
+
+
+    int countSelectionsTeacher(String jobNumber, String studentId, String semester, String courseId, Integer usualPerformance, Integer testScore, Integer totalScore);
+
+    int countSelectionsStudent(String studentId, String jobNumber, String semester, String courseId, Integer usualPerformance, Integer testScore, Integer totalScore);
 }

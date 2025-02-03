@@ -13,6 +13,9 @@ public class CourseSelection {
     private Integer testScore;
     private Integer totalScore;
 
+    private String courseName;
+    private String studentName;
+
     private Student student;
     private OpenCourse openCourse;
 }

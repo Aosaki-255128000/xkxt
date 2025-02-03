@@ -33,14 +33,73 @@
     </update>
 
     <select id="selectSelectionsByJobNumber" resultType="com.hsy.springboot.entity.CourseSelection">
-        select * from courseselection
-        where jobNumber = #{jobNumber}
-        limit #{pageNum}, #{pageSize}
+        SELECT
+            cs.*,
+            c.name AS courseName,
+            s.name AS studentName
+        FROM courseselection cs
+        LEFT JOIN course c ON cs.courseId = c.courseId
+        LEFT JOIN student s ON cs.studentId = s.code
+        WHERE cs.jobNumber = #{jobNumber}
+        <if test="studentId != null and studentId != ''">
+            AND cs.studentId = #{studentId}
+        </if>
+        <if test="semester != null and semester != ''">
+            AND cs.semester = #{semester}
+        </if>
+        <if test="courseId != null and courseId != ''">
+            AND cs.courseId = #{courseId}
+        </if>
+        <if test="usualPerformance != null and usualPerformance != ''">
+            AND cs.usualPerformance = #{usualPerformance}
+        </if>
+        <if test="testScore != null and testScore != ''">
+            AND cs.testScore = #{testScore}
+        </if>
+        <if test="totalScore != null and totalScore != ''">
+            AND cs.totalScore = #{totalScore}
+        </if>
+        LIMIT #{pageNum}, #{pageSize}
     </select>
 
-    <select id="countSelections" resultType="int">
+    <select id="countSelectionsTeacher" resultType="int">
         select count(*) from courseselection
         where jobNumber = #{jobNumber}
+    </select>
+
+    <select id="selectSelectionsByStudentId" resultType="com.hsy.springboot.entity.CourseSelection">
+        SELECT
+        cs.*,
+        c.name AS courseName,
+        t.name AS teacherName
+        FROM courseselection cs
+        LEFT JOIN course c ON cs.courseId = c.courseId
+        LEFT JOIN teacher t ON cs.jobNumber = t.jobNumber
+        WHERE cs.studentId = #{studentId}
+        <if test="jobNumber != null and jobNumber != ''">
+            AND cs.jobNumber = #{jobNumber}
+        </if>
+        <if test="semester != null and semester != ''">
+            AND cs.semester = #{semester}
+        </if>
+        <if test="courseId != null and courseId != ''">
+            AND cs.courseId = #{courseId}
+        </if>
+        <if test="usualPerformance != null and usualPerformance != ''">
+            AND cs.usualPerformance = #{usualPerformance}
+        </if>
+        <if test="testScore != null and testScore != ''">
+            AND cs.testScore = #{testScore}
+        </if>
+        <if test="totalScore != null and totalScore != ''">
+            AND cs.totalScore = #{totalScore}
+        </if>
+        LIMIT #{pageNum}, #{pageSize}
+    </select>
+
+    <select id="countSelectionsStudent" resultType="int">
+        select count(*) from courseselection
+        where studentId = #{studentId}
     </select>
 
 </mapper>

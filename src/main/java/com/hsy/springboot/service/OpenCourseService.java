@@ -29,6 +29,6 @@ public class OpenCourseService {
     }
 
     public int countCoursesByJobNumber(String jobNumber, String semester, String courseId, String classTime) {
-        return openCourseMapper.countCourses(jobNumber, semester, courseId, classTime);
+        return openCourseMapper.countCoursesTeacher(jobNumber, semester, courseId, classTime);
     }
 }

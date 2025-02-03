@@ -63,8 +63,13 @@ public interface OpenCourseMapper {
                                               @Param("courseId") String courseId,
                                               @Param("classTime") String classTime);
 
-    int countCourses(@Param("jobNumber") String jobNumber,
+    int countCoursesTeacher(@Param("jobNumber") String jobNumber,
                      @Param("semester") String semester,
                      @Param("courseId") String courseId,
                      @Param("classTime") String classTime);
+
+
+
+
+
 }

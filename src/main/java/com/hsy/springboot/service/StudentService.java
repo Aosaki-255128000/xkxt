@@ -27,4 +27,12 @@ public class StudentService {
         return studentMapper.findByStudentnameAndRole(username, role);
     }
 
+    public Student login(Student student) {
+        Student dbStudent = studentMapper.findByUsername(student.getUsername());
+        if(dbStudent != null && dbStudent.getPassword().equals(student.getPassword())) {
+            return dbStudent;
+        }
+        return null;
+    }
+
 }
