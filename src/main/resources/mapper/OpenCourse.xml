@@ -47,5 +47,72 @@
         WHERE jobNumber = #{jobNumber}
     </select>
 
+    <select id="selectOpenCoursesWithDetails" resultMap="OpenCourseResultMap">
+        SELECT
+        oc.semester,
+        oc.courseId,
+        oc.jobNumber,
+        oc.classTime,
+        c.name as course_name,
+        c.credit,
+        c.creditHour,
+        t.name as teacher_name
+        FROM opencourse oc
+        LEFT JOIN course c ON oc.courseId = c.courseId
+        LEFT JOIN teacher t ON oc.jobNumber = t.jobNumber
+        <where>
+            <if test="semester != null and semester != ''">
+                AND oc.semester = #{semester}
+            </if>
+
+            <if test="courseId != null and courseId != ''">
+                AND oc.courseId LIKE CONCAT('%', #{courseId}, '%')
+            </if>
+
+            <if test="courseName != null and courseName != ''">
+                AND c.name LIKE CONCAT('%', #{courseName}, '%')
+            </if>
+
+            <if test="credit != null">
+                AND c.credit = #{credit}
+            </if>
+
+            <if test="creditHour != null">
+                AND c.creditHour = #{creditHour}
+            </if>
+
+            <if test="jobNumber != null and jobNumber != ''">
+                AND oc.jobNumber = #{jobNumber}
+            </if>
+
+            <if test="teacherName != null and teacherName != ''">
+                AND t.name LIKE CONCAT('%', #{teacherName}, '%')
+            </if>
+
+            <if test="classTime != null and classTime != ''">
+                AND oc.classTime LIKE CONCAT('%', #{classTime}, '%')
+            </if>
+        </where>
+        ORDER BY oc.semester DESC
+        LIMIT #{pageNum}, #{pageSize}
+    </select>
+
+    <resultMap id="OpenCourseResultMap" type="com.hsy.springboot.entity.OpenCourse">
+        <id property="id" column="id"/>
+        <result property="semester" column="semester"/>
+        <result property="courseId" column="courseId"/>
+        <result property="jobNumber" column="jobNumber"/>
+        <result property="classTime" column="classTime"/>
+
+        <association property="course" javaType="com.hsy.springboot.entity.Course">
+            <result property="name" column="course_name"/>
+            <result property="credit" column="credit"/>
+            <result property="creditHour" column="creditHour"/>
+        </association>
+
+        <association property="teacher" javaType="com.hsy.springboot.entity.Teacher">
+            <result property="name" column="teacher_name"/>
+        </association>
+    </resultMap>
 
 </mapper>

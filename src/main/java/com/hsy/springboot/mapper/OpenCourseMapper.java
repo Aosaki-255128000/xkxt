@@ -9,6 +9,19 @@ public interface OpenCourseMapper {
     @Select("select * from opencourse")
     List<OpenCourse> findAll();
 
+    List<OpenCourse> selectOpenCoursesWithDetails(
+            @Param("semester") String semester,
+            @Param("courseId") String courseId,
+            @Param("courseName") String courseName,
+            @Param("credit") Integer credit,
+            @Param("creditHour") Integer creditHour,
+            @Param("jobNumber") String jobNumber,
+            @Param("teacherName") String teacherName,
+            @Param("classTime") String classTime,
+            @Param("pageNum") Integer pageNum,
+            @Param("pageSize") Integer pageSize
+    );
+
     @Insert("insert into opencourse(semester, courseId, jobNumber, classTime) values (#{semester}, #{courseId}, #{jobNumber}, #{classTime})")
     int insert(OpenCourse opencourse);
 
@@ -67,9 +80,6 @@ public interface OpenCourseMapper {
                      @Param("semester") String semester,
                      @Param("courseId") String courseId,
                      @Param("classTime") String classTime);
-
-
-
 
 
 }

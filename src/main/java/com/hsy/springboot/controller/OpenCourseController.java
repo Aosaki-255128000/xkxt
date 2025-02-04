@@ -83,4 +83,34 @@ public class OpenCourseController {
         return result;
     }
 
+    // 学生选课端
+    @GetMapping("/studentPage")
+    public Map<String, Object> selectCoursesWithDetails(
+            @RequestParam Integer pageNum,
+            @RequestParam Integer pageSize,
+            @RequestParam(defaultValue = "") String semester,
+            @RequestParam(defaultValue = "") String courseId,
+            @RequestParam(defaultValue = "") String courseName,
+            @RequestParam(required = false) Integer credit,
+            @RequestParam(required = false) Integer creditHour,
+            @RequestParam(defaultValue = "") String jobNumber,
+            @RequestParam(defaultValue = "") String teacherName,
+            @RequestParam(defaultValue = "") String classTime) {
+
+        // 分页参数计算
+        int offset = (pageNum - 1) * pageSize;
+
+        Map<String, Object> result = new HashMap<>();
+        List<OpenCourse> courses = openCourseService.listDetails(
+                semester, courseId, courseName,
+                credit, creditHour, jobNumber,
+                teacherName, classTime, offset, pageSize
+        );
+
+        int total = openCourseMapper.selectTotal(semester, courseId, jobNumber, classTime);
+
+        result.put("data", courses);
+        result.put("total", total);
+        return result;
+    }
 }
