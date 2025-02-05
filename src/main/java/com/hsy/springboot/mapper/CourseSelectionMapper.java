@@ -77,4 +77,6 @@ public interface CourseSelectionMapper {
     int countSelectionsTeacher(String jobNumber, String studentId, String semester, String courseId, Integer usualPerformance, Integer testScore, Integer totalScore);
 
     int countSelectionsStudent(String studentId, String jobNumber, String semester, String courseId, Integer usualPerformance, Integer testScore, Integer totalScore);
+
+    List<CourseSelection> selectTimetableByStudent(String studentId, String semester);
 }

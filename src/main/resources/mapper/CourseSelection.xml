@@ -102,4 +102,22 @@
         where studentId = #{studentId}
     </select>
 
+    <select id="selectTimetableByStudent" resultType="com.hsy.springboot.entity.CourseSelection">
+        SELECT
+            cs.semester,
+            cs.courseId,
+            c.name as courseName,
+            oc.classTime,
+            t.name as teacherName
+        FROM courseselection cs
+        LEFT JOIN opencourse oc ON
+            cs.semester = oc.semester AND
+            cs.courseId = oc.courseId AND
+            cs.jobNumber = oc.jobNumber
+        LEFT JOIN course c ON cs.courseId = c.courseId
+        LEFT JOIN teacher t ON cs.jobNumber = t.jobNumber
+        WHERE cs.studentId = #{studentId}
+            AND cs.semester = #{semester}
+    </select>
+
 </mapper>

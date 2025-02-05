@@ -9,6 +9,7 @@ import java.util.List;
 
 @Service
 public class CourseSelectionService {
+
     @Autowired
     private CourseSelectionMapper courseSelectionMapper;
 
@@ -66,4 +67,7 @@ public class CourseSelectionService {
         return courseSelectionMapper.countSelectionsStudent(studentId, jobNumber, semester, courseId, usualPerformance, testScore, totalScore);
     }
 
+    public List<CourseSelection> getStudentTimetable(String studentId, String semester) {
+        return courseSelectionMapper.selectTimetableByStudent(studentId, semester);
+    }
 }

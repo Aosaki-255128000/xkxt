@@ -2,6 +2,7 @@ package com.hsy.springboot.controller;
 
 
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.hsy.springboot.common.Result;
 import com.hsy.springboot.entity.OpenCourse;
 import com.hsy.springboot.mapper.OpenCourseMapper;
 import com.hsy.springboot.service.OpenCourseService;
@@ -113,4 +114,6 @@ public class OpenCourseController {
         result.put("total", total);
         return result;
     }
+
+
 }

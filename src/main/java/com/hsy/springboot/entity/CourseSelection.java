@@ -16,6 +16,7 @@ public class CourseSelection {
     private String courseName;
     private String studentName;
     private String teacherName;
+    private String classTime;
 
     private Student student;
     private OpenCourse openCourse;

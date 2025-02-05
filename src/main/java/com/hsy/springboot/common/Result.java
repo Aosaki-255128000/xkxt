@@ -1,6 +1,7 @@
 package com.hsy.springboot.common;
 
 import lombok.Data;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,11 +19,15 @@ public class Result {
         return result;
     }
 
-    public static Result ok() {
+    public static Result successWithData(Object data) {
         Result result = new Result();
-        result.code = 200;
+        result.setCode(200);
+        result.setMessage("成功");
+        result.getData().put("data", data); // 直接存入 data 字段
         return result;
     }
+
+
 
     // 失败静态方法
     public static Result error() {

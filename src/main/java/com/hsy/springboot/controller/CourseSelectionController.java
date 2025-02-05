@@ -1,5 +1,6 @@
 package com.hsy.springboot.controller;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.hsy.springboot.common.Result;
 import com.hsy.springboot.entity.Course;
 import com.hsy.springboot.entity.CourseSelection;
 import com.hsy.springboot.mapper.CourseSelectionMapper;
@@ -107,7 +108,7 @@ public class CourseSelectionController {
         DecodedJWT decodedJWT = JWTUtils.verifyToken(token);
         String studentId = decodedJWT.getClaim("code").asString();
 
-        // 查询该教师的选课信息
+        // 查询该学生的选课信息
         Map<String, Object> result = new HashMap<>();
         List<CourseSelection> courseSelections = courseSelectionService.findSelectionsByStudentId(studentId, pageNum, pageSize, jobNumber, semester, courseId, usualPerformance, testScore, totalScore);
         int total = courseSelectionService.countSelectionsByStudentId(studentId, jobNumber, semester, courseId, usualPerformance, testScore, totalScore);
@@ -115,6 +116,22 @@ public class CourseSelectionController {
         result.put("data", courseSelections);
         result.put("total", total);
         return result;
+    }
+
+    @GetMapping("/timetable")
+    public Result getTimetable(
+            @RequestHeader(value = "token") String token,
+            @RequestParam String semester) {
+
+        //接续学生ID
+        DecodedJWT decodedJWT = JWTUtils.verifyToken(token);
+        String studentId = decodedJWT.getClaim("code").asString();
+
+        //查询选课数据
+        List<CourseSelection> selections = courseSelectionService.getStudentTimetable(studentId, semester);
+
+        return Result.successWithData(selections);
+
     }
 
 
