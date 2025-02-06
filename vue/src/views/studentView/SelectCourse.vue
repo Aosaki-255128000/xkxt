@@ -62,35 +62,23 @@
           border
           style="width: 100%;"
           :span-method="spanMethod"
-          :cell-style="cellStyle">
-
+          :cell-style="cellStyle"
+      >
         <!-- 时间列 -->
-        <el-table-column
-            prop="time"
-            label="时间"
-            width="120"
-            align="center">
-        </el-table-column>
+        <el-table-column prop="time" label="时间" width="120" align="center" />
 
         <!-- 星期列 -->
         <el-table-column
             v-for="(day, index) in ['周一','周二','周三','周四','周五']"
             :key="index"
-            :prop="`day${index+1}`"
+            :prop="`day${index + 1}`"
             :label="day"
-            align="center">
+            align="center"
+        >
           <template v-slot="{ row, column }">
-            <div v-if="row[column.property]"
-                 class="course-cell"
-                 :style="{
-               backgroundColor: row[column.property].color,
-               height: cellHeight(row[column.property].span)
-             }">
-              <div class="course-content">
-                {{ row[column.property].courseName }}
-                <el-divider style="margin: 5px 0"></el-divider>
-                {{ row[column.property].teacherName }}
-              </div>
+            <div class="course-content">
+              <div class="course-name">{{ row[column.property]?.courseName }}</div>
+              <div class="teacher-name">@{{row[column.property]?.teacherName }}</div>
             </div>
           </template>
         </el-table-column>
@@ -174,78 +162,70 @@ export default {
     },
 
     processTimetableData(rawData) {
-
-      console.log("rawData:", rawData);
-
-      // 创建12节课的时间槽位
-      const timeSlots = Array.from({length: 12}, (_, i) => ({
-        time: `${i+1} ${this.getTimeRange(i+1)}`,
+      // 创建12节课的时间槽位（初始化所有单元格为空）
+      const timeSlots = Array.from({ length: 12 }, (_, i) => ({
+        time: `${i + 1} ${this.getTimeRange(i + 1)}`,
         day1: null, day2: null, day3: null, day4: null, day5: null
       }));
 
       // 颜色生成器（按课程ID生成固定颜色）
       const colorMap = new Map();
-      const hueBase = Math.random() * 360; // 生成基础色相
+      const hueBase = Math.random() * 360;
 
       rawData.forEach(selection => {
-        console.log("当前数据:", selection);
-        if (!selection.classTime || typeof selection.classTime !== "string") {
-          console.error("classTime 非法数据:", selection);
-          return; // 跳过这个数据
-        }
-        // 解析classTime格式 "星期三1-4"
-        const [weekdayStr, slotRange] = selection.classTime.split(/(?<=星期[一二三四五])/);
-        if (!slotRange) {
-          console.error("classTime 解析失败:", selection.classTime);
+        if (!selection.classTime || typeof selection.classTime !== 'string') return;
+
+        // 使用更健壮的正则解析 "星期三5-8" 或 "星期三1-4节"
+        const match = selection.classTime.match(/星期([一二三四五])(\d+)-(\d+)/);
+        if (!match) {
+          console.error('classTime 格式错误:', selection.classTime);
           return;
         }
+
+        // 解析星期和节次
+        const weekdayStr = `星期${match[1]}`; // 如 "星期三"
+        const startSlot = parseInt(match[2], 10);
+        const endSlot = parseInt(match[3], 10);
+
+        // 映射星期到列（星期一=1，星期三=3...）
         const weekdayMap = {
           "星期一": 1, "星期二": 2, "星期三": 3, "星期四": 4, "星期五": 5
         };
         const weekday = weekdayMap[weekdayStr];
+        if (!weekday) return;
 
-        // 解析节次范围
-        const [start, end] = slotRange.split('-').map(Number);
-
-        // 生成课程颜色（相同课程相同颜色）
+        // 生成课程颜色
         if (!colorMap.has(selection.courseId)) {
           colorMap.set(selection.courseId,
-              `hsl(${(hueBase + Math.random()*50) % 360}, 70%, 60%)`);
+              `hsl(${(hueBase + Math.random() * 50) % 360}, 70%, 60%)`);
         }
 
-        // 填充时间段
-        for (let slot = start; slot <= end; slot++) {
-          const slotIndex = slot - 1;
-          const prop = `day${weekday}`;
-
-          // 只填充第一个单元格，后续合并
-          if (slot === start) {
-            timeSlots[slotIndex][prop] = {
-              courseName: selection.courseName,
-              teacherName: selection.teacherName,
-              color: colorMap.get(selection.courseId),
-              span: end - start + 1
-            };
-          } else {
-            timeSlots[slotIndex][prop] = { ...timeSlots[start-1][prop] };
-          }
-        }
+        // 只在第一个时间段填充数据
+        const firstSlotIndex = startSlot - 1;
+        timeSlots[firstSlotIndex][`day${weekday}`] = {
+          courseName: selection.courseName,
+          teacherName: selection.teacherName,
+          color: colorMap.get(selection.courseId),
+          span: endSlot - startSlot + 1 // 合并行数
+        };
       });
 
       this.gridData = timeSlots;
     },
 
     spanMethod({ row, column, rowIndex, columnIndex }) {
-      if (columnIndex === 0) return;
+      if (columnIndex === 0) return; // 时间列不合并
 
-      const prop = column.property
+      const prop = column.property;
       const course = row[prop];
 
       if (course && course.span) {
-        return {
-          rowspan: course.span,
-          colspan: 1
-        };
+        // 仅第一个单元格需要合并
+        if (rowIndex === this.gridData.findIndex(r => r[prop] === course)) {
+          return { rowspan: course.span, colspan: 1 };
+        } else {
+          return { rowspan: 0, colspan: 0 }; // 隐藏被合并的单元格
+        }
       }
       return { rowspan: 1, colspan: 1 };
     },
@@ -304,15 +284,14 @@ export default {
       this.pageNum = pageNum
       this.load()
     },
-    cellHeight(span) {
-      // 每节课高度60px，合并单元格需要计算总高度
-      return span ? `${span * 60 - 2}px` : 'auto';
-    },
-    cellStyle({ row, column, rowIndex }) {
-      // 隐藏被合并单元格的边框
-      if (column.property !== 'time' && row[column.property]?.span) {
-        return { border: 'none' };
+
+    cellStyle({ row, column }) {
+      if (row[column.property]) {
+        return {
+          backgroundColor: row[column.property].color,
+        };
       }
+      return {};
     }
 
   }
@@ -320,20 +299,23 @@ export default {
 </script>
 
 <style scoped>
-.headerBg {
-  background-color: aliceblue !important;
-}
-.course-cell {
-  padding: 0 !important;
-  position: relative;
-}
 .course-content {
-  padding: 8px;
-  height: 100%;
   display: flex;
   flex-direction: column;
+  align-items: center;
   justify-content: center;
-  color: white;
-  font-size: 12px;
+  width: 100%;
+  height: 100%;
+  font-weight: bold;
+}
+.course-name {
+  font-size: 18px; /* 课程名大一点 */
+  font-weight: bold;
+  color: white; /* 白色 */
+}
+
+.teacher-name {
+  font-size: 16px; /* 教师名小一点 */
+  color: white; /* 浅灰 */
 }
 </style>
