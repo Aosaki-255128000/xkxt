@@ -79,4 +79,10 @@ public interface CourseSelectionMapper {
     int countSelectionsStudent(String studentId, String jobNumber, String semester, String courseId, Integer usualPerformance, Integer testScore, Integer totalScore);
 
     List<CourseSelection> selectTimetableByStudent(String studentId, String semester);
+
+    @Select("select * from courseselection where id = #{id}")
+    CourseSelection selectById(Integer id);
+
+    @Select("SELECT * FROM courseselection WHERE courseId = #{courseId} AND studentId = #{studentId}")
+    CourseSelection selectByCourseIdAndStudentId(String courseId, String studentId);
 }

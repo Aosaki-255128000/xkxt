@@ -97,6 +97,7 @@
         LIMIT #{pageNum}, #{pageSize}
     </select>
 
+
     <resultMap id="OpenCourseResultMap" type="com.hsy.springboot.entity.OpenCourse">
         <id property="id" column="id"/>
         <result property="semester" column="semester"/>
@@ -114,5 +115,14 @@
             <result property="name" column="teacher_name"/>
         </association>
     </resultMap>
+
+    <select id="getCourseTime" resultType="com.hsy.springboot.entity.OpenCourse">
+        SELECT
+            semester, courseId, jobNumber, classTime
+        FROM opencourse
+        WHERE semester=#{semester}
+          AND courseId=#{courseId}
+          AND jobNumber=#{jobNumber}
+    </select>
 
 </mapper>

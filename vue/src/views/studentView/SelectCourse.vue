@@ -9,6 +9,7 @@
       <el-button class="ml-5" type="warning" @click="reset">重置</el-button>
     </div>
 
+    <!--  选课表容器  -->
     <el-table :data="tableData" border stripe :header-cell-class-name="headerBg" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55"></el-table-column>
       <el-table-column prop="semester" label="学期"></el-table-column>
@@ -21,7 +22,7 @@
       <el-table-column prop="classTime" label="开课时间"></el-table-column>
       <el-table-column label="操作" width="200" align="center">
         <template v-slot:default="scope">
-          <el-button type="success" @click="">选课 <i class="el-icon-edit"></i></el-button>
+          <el-button type="success" @click="enrollCourse(scope.row)">选课 <i class="el-icon-edit"></i></el-button>
           <el-popconfirm
               class="ml-5"
               confirm-button-text="确定"
@@ -29,7 +30,8 @@
               icon="el-icon-info"
               icon-color="red"
               title="取消选课？"
-              @confirm=""
+              :hide-after="0"
+              @confirm="withdrawCourse(scope.row)"
           >
             <el-button type="danger" slot="reference">退课 <i class="el-icon-remove-outline"></i></el-button>
           </el-popconfirm>
@@ -163,7 +165,7 @@ export default {
 
     processTimetableData(rawData) {
       // 创建12节课的时间槽位（初始化所有单元格为空）
-      const timeSlots = Array.from({ length: 12 }, (_, i) => ({
+      const timeSlots = Array.from({length: 12}, (_, i) => ({
         time: `${i + 1} ${this.getTimeRange(i + 1)}`,
         day1: null, day2: null, day3: null, day4: null, day5: null
       }));
@@ -213,7 +215,7 @@ export default {
       this.gridData = timeSlots;
     },
 
-    spanMethod({ row, column, rowIndex, columnIndex }) {
+    spanMethod({row, column, rowIndex, columnIndex}) {
       if (columnIndex === 0) return; // 时间列不合并
 
       const prop = column.property;
@@ -222,12 +224,12 @@ export default {
       if (course && course.span) {
         // 仅第一个单元格需要合并
         if (rowIndex === this.gridData.findIndex(r => r[prop] === course)) {
-          return { rowspan: course.span, colspan: 1 };
+          return {rowspan: course.span, colspan: 1};
         } else {
-          return { rowspan: 0, colspan: 0 }; // 隐藏被合并的单元格
+          return {rowspan: 0, colspan: 0}; // 隐藏被合并的单元格
         }
       }
-      return { rowspan: 1, colspan: 1 };
+      return {rowspan: 1, colspan: 1};
     },
 
     getTimeRange(slot) {
@@ -247,6 +249,87 @@ export default {
       };
       return timeMap[slot];
     },
+
+    // 选课方法
+    async enrollCourse(course) {
+      try {
+        console.log('Course Data:', course); // 打印course对象内容
+        const token = localStorage.getItem('token');
+
+        if(!token) {
+          this.$message.error('未找到token， 请先登录');
+          return;
+        }
+
+        console.log('Request Payload: ', {
+          semester: course.semester,
+          courseId: course.courseId,
+          jobNumber: course.jobNumber,
+        })
+
+        const res = await this.$axios.post('/courseSelection/enroll',
+            {
+              semester: course.semester,
+              courseId: course.courseId,
+              jobNumber: course.jobNumber
+              },
+            {
+              headers: {
+                'token': token, // 传递 token
+              }
+            }
+        );
+        if (res.data.code === 200) {
+          this.$message.success('选课成功');
+          this.loadTimetable(); // 刷新列表
+        } else {
+          this.$message.error(res.data.message);
+        }
+      } catch (error) {
+        this.$message.error('选课失败');
+      }
+    },
+
+    // 退课方法
+    async withdrawCourse(course) {
+      try {
+        const token = localStorage.getItem('token');
+
+        if (!token) {
+          this.$message.error('未找到token， 请先登录');
+          return;
+        }
+
+        console.log('Request Payload: ', {
+          semester: course.semester,
+          courseId: course.courseId,
+          jobNumber: course.jobNumber,
+        });
+
+        const res = await this.$axios.delete('/courseSelection/withdraw',
+            {
+              data: {
+                semester: course.semester,
+                courseId: course.courseId,
+                jobNumber: course.jobNumber,
+              },
+              headers: {
+                'token': token, // 传递 token
+              },
+            }
+        );
+
+        if (res.data.code === 200) {
+          this.$message.success('退课成功');
+          this.load(); // 刷新列表
+        } else {
+          this.$message.error(res.data.message);
+        }
+      } catch (error) {
+        this.$message.error('退课失败');
+      }
+    },
+
 
     handleAdd() {
       this.dialogFormVisible = true
@@ -274,26 +357,25 @@ export default {
       this.classTime = ""
       this.load()
     },
-    handleSizeChange(pageSize){
+    handleSizeChange(pageSize) {
       console.log(pageSize)
       this.pageSize = pageSize
       this.load()
     },
-    handleCurrentChange(pageNum){
+    handleCurrentChange(pageNum) {
       console.log(pageNum)
       this.pageNum = pageNum
       this.load()
     },
 
-    cellStyle({ row, column }) {
+    cellStyle({row, column}) {
       if (row[column.property]) {
         return {
           backgroundColor: row[column.property].color,
         };
       }
       return {};
-    }
-
+    },
   }
 }
 </script>

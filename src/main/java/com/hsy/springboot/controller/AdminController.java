@@ -55,31 +55,4 @@ public class AdminController {
         return res;
     }
 
-//    @PostMapping("/login")
-//    public Result login(@RequestBody Admin admin) {
-//        // 查询数据库
-//        Admin dbAdmin = adminService.login(admin);
-//
-//        if (dbAdmin != null) {
-//            // 生成JWT令牌
-//            Map<String, Object> claims = new HashMap<>();
-//            claims.put("id", dbAdmin.getId());
-//            claims.put("username", dbAdmin.getUsername());
-//            claims.put("role", "admin"); // 角色信息
-//
-//            String token = JWTUtils.generateToken(claims);
-//
-//            // 打印 JWT
-//            System.out.println("Generated JWT: " + token);
-//
-//            // 返回登录成功信息 & Token
-//            return Result.success()
-//                    .message("登录成功")
-//                    .data("token", token);
-//        }
-//
-//        // 失败返回
-//        return Result.error().message("用户名或密码错误");
-//    }
-
 }

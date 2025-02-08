@@ -3,10 +3,13 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.hsy.springboot.common.Result;
 import com.hsy.springboot.entity.Course;
 import com.hsy.springboot.entity.CourseSelection;
+import com.hsy.springboot.entity.EnrollRequest;
+import com.hsy.springboot.entity.OpenCourse;
 import com.hsy.springboot.mapper.CourseSelectionMapper;
+import com.hsy.springboot.mapper.OpenCourseMapper;
 import com.hsy.springboot.service.CourseSelectionService;
 import com.hsy.springboot.utils.JWTUtils;
-import org.apache.catalina.startup.ContextRuleSet;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,6 +26,9 @@ public class CourseSelectionController {
 
     @Autowired
     private CourseSelectionService courseSelectionService;
+
+    @Autowired
+    private OpenCourseMapper openCourseMapper;
 
     @PostMapping
     public Integer save(@RequestBody CourseSelection courseSelection) { return courseSelectionService.save(courseSelection); }
@@ -60,7 +66,6 @@ public class CourseSelectionController {
 
     @DeleteMapping("/{id}")
     public Integer delete(@PathVariable Integer id) { return courseSelectionMapper.deleteById(id); }
-
 
     @GetMapping("/studentResult")
     public Map<String, Object> findStudentResult(
@@ -132,6 +137,114 @@ public class CourseSelectionController {
 
         return Result.successWithData(selections);
 
+    }
+
+    // 选课
+    @PostMapping("/enroll")
+    public Result enrollCourse(HttpServletRequest request, @RequestBody EnrollRequest enrollRequest) {
+        System.out.println("Received EnrollRequest: " + enrollRequest);
+        String token = request.getHeader("token");
+
+        if (token == null || token.isEmpty()) {
+            return Result.errorPrint("token 丢失");
+        }
+        DecodedJWT decodedJWT = JWTUtils.verifyToken(token);
+        String studentId = decodedJWT.getClaim("code").asString();
+
+        // 学期校验
+        if (!"202502".equals(enrollRequest.getSemester())) {
+            return Result.errorPrint("当前选课未开放，请选择2025学年第2学期的课程！");
+        }
+
+        // 获取课程时间
+        OpenCourse courseTime = openCourseMapper.getCourseTime(
+                enrollRequest.getSemester(),
+                enrollRequest.getCourseId(),
+                enrollRequest.getJobNumber()
+        );
+
+        // 冲突检测
+        List<CourseSelection> selectedCourses = courseSelectionMapper.selectTimetableByStudent(
+                studentId,
+                enrollRequest.getSemester()
+        );
+        if (hasTimeConflict(courseTime.getClassTime(), selectedCourses)) {
+            return Result.errorPrint("课程时间冲突");
+        }
+
+        // 保存选课
+        CourseSelection selection = new CourseSelection();
+        selection.setStudentId(studentId);
+        selection.setSemester(enrollRequest.getSemester());
+        selection.setCourseId(enrollRequest.getCourseId());
+        selection.setJobNumber(enrollRequest.getJobNumber());
+        courseSelectionMapper.insert(selection);
+
+        return Result.success();
+    }
+
+    // 时间冲突检查
+    private boolean hasTimeConflict(String newTime, List<CourseSelection> selectedCourses) {
+
+        if (selectedCourses.isEmpty()) {
+            return false;  // 如果没有已选课程，说明没有时间冲突
+        }
+
+        // 解析新的课程时间
+        String[] newParts = newTime.split("星期|\\D+");  // 修改正则表达式，确保正确解析时间部分
+        String newDay = newParts[1];
+        int newStart = Integer.parseInt(newParts[2].split("-")[0]);
+        int newEnd = Integer.parseInt(newParts[2].split("-")[1]);
+
+        for (CourseSelection sc : selectedCourses) {
+            // 解析已选课程的时间
+            String[] existParts = sc.getClassTime().split("星期|\\D+");
+            String existDay = existParts[1];
+            int existStart = Integer.parseInt(existParts[2].split("-")[0]);
+            int existEnd = Integer.parseInt(existParts[2].split("-")[1]);
+
+            // 判断是否是同一天
+            if (newDay.equals(existDay)) {
+                // 判断时间是否重叠
+                if (newStart <= existEnd && newEnd >= existStart) {
+                    return true;  // 有时间冲突
+                }
+            }
+        }
+        return false;  // 没有时间冲突
+    }
+
+    // 退课
+    @DeleteMapping("/withdraw")
+    public Result withdrawCourse(HttpServletRequest request, @RequestBody EnrollRequest withdrawRequest) {
+        String token = request.getHeader("token");
+
+        if (token == null || token.isEmpty()) {
+            return Result.errorPrint("token 丢失");
+        }
+
+        // 获取学生ID
+        DecodedJWT decodedJWT = JWTUtils.verifyToken(token);
+        String studentId = decodedJWT.getClaim("code").asString();
+
+        // 校验学期
+        if (!withdrawRequest.getSemester().equals("202502")) {
+            return Result.errorPrint("当前退课未开放，请选择2025学年第2学期的课程！");
+        }
+
+        // 查找选课记录
+        CourseSelection selection = courseSelectionMapper.selectByCourseIdAndStudentId(
+                withdrawRequest.getCourseId(),
+                studentId
+        );
+
+        if (selection == null) {
+            return Result.errorPrint("未找到选课记录");
+        }
+
+        // 删除选课记录
+        courseSelectionMapper.deleteById(selection.getId());
+        return Result.success();
     }
 
 
