@@ -120,4 +120,13 @@
             AND cs.semester = #{semester}
     </select>
 
+    <select id="selectAverageTotalScore" resultType="java.lang.Double">
+        SELECT AVG(cs.totalScore)
+        FROM courseselection cs
+                 JOIN opencourse oc ON cs.semester = oc.semester AND cs.courseId = oc.courseId AND cs.jobNumber = oc.jobNumber
+        WHERE oc.semester = #{semester}
+          AND oc.courseId = #{courseId}
+          AND oc.jobNumber = #{jobNumber}
+    </select>
+
 </mapper>

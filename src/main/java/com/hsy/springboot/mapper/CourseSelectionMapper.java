@@ -85,4 +85,7 @@ public interface CourseSelectionMapper {
 
     @Select("SELECT * FROM courseselection WHERE courseId = #{courseId} AND studentId = #{studentId}")
     CourseSelection selectByCourseIdAndStudentId(String courseId, String studentId);
+
+
+    Double selectAverageTotalScore(String semester, String courseId, String jobNumber);
 }

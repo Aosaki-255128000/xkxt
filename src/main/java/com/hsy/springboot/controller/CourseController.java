@@ -4,6 +4,9 @@ import com.hsy.springboot.entity.Course;
 import com.hsy.springboot.mapper.CourseMapper;
 import com.hsy.springboot.service.CourseService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -12,7 +15,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/course")
-public class CourseContoller {
+public class CourseController {
 
     @Autowired
     private CourseService courseService;
@@ -30,7 +33,18 @@ public class CourseContoller {
     }
 
     @DeleteMapping("/{id}")
-    public Integer delete(@PathVariable Integer id) { return courseMapper.deleteById(id); }
+    public ResponseEntity<?> delete(@PathVariable Integer id) {
+        try {
+            int result = courseMapper.deleteById(id);
+            if (result > 0) {
+                return ResponseEntity.ok().build();
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("删除失败，可能存在关联数据");
+            }
+        } catch (DataIntegrityViolationException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("无法删除该课程，存在关联的开课记录");
+        }
+    }
 
     @GetMapping("/page")
     public Map<String, Object> findPage(@RequestParam Integer pageNum,

@@ -83,4 +83,5 @@ public interface OpenCourseMapper {
 
 
     OpenCourse getCourseTime(String semester, String courseId, String jobNumber);
+
 }

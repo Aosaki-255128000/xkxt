@@ -8,6 +8,9 @@ import com.hsy.springboot.mapper.OpenCourseMapper;
 import com.hsy.springboot.service.OpenCourseService;
 import com.hsy.springboot.utils.JWTUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -57,7 +60,18 @@ public class OpenCourseController {
     }
 
     @DeleteMapping("/{id}")
-    public Integer delete(@PathVariable Integer id) { return openCourseMapper.deleteById(id); }
+    public ResponseEntity<?> delete(@PathVariable Integer id) {
+        try {
+            int result = openCourseMapper.deleteById(id);
+            if (result > 0) {
+                return ResponseEntity.ok().build();
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("删除失败，可能存在关联数据");
+            }
+        } catch (DataIntegrityViolationException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("无法删除该开课，存在关联的选课记录");
+        }
+    }
 
     @GetMapping("/teacherPage")
     public Map<String, Object> findTeacherPage(

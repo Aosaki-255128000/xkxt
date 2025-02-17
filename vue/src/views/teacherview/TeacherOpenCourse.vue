@@ -15,6 +15,12 @@
       <el-table-column prop="courseId" label="课号"></el-table-column>
       <el-table-column prop="courseName" label="课程名称"></el-table-column>
       <el-table-column prop="classTime" label="开课时间"></el-table-column>
+      <!-- 新增平均成绩列 -->
+      <el-table-column prop="averageScore" label="平均成绩" width="150px">
+        <template slot-scope="scope">
+          <span>{{ scope.row.averageScore.toFixed(2) }}</span>  <!-- 保留两位小数 -->
+        </template>
+      </el-table-column>
     </el-table>
 
     <div style="padding: 10px 0">

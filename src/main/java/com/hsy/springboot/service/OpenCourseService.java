@@ -2,6 +2,7 @@ package com.hsy.springboot.service;
 
 
 import com.hsy.springboot.entity.OpenCourse;
+import com.hsy.springboot.mapper.CourseSelectionMapper;
 import com.hsy.springboot.mapper.OpenCourseMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,6 +14,9 @@ public class OpenCourseService {
 
     @Autowired
     private OpenCourseMapper openCourseMapper;
+
+    @Autowired
+    private CourseSelectionMapper courseSelectionMapper;
 
     public int save(OpenCourse opencourse) {
         if(opencourse.getId() == null) {
@@ -40,7 +44,13 @@ public class OpenCourseService {
         return openCourseMapper.selectCoursesByJobNumber(jobNumber, pageNum, pageSize, semester, courseId, classTime);
     }
 
+
     public int countCoursesByJobNumber(String jobNumber, String semester, String courseId, String classTime) {
         return openCourseMapper.countCoursesTeacher(jobNumber, semester, courseId, classTime);
     }
+
+    public Double calculateAverageTotalScore(String semester, String courseId, String jobNumber) {
+        return courseSelectionMapper.selectAverageTotalScore(semester, courseId, jobNumber);
+    }
+
 }

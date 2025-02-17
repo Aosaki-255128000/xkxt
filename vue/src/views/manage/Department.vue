@@ -135,14 +135,16 @@ export default {
     },
     del(id) {
       this.request.delete(`/department/${id}`).then(res => {
-        if(res) {
-          this.$message.success("删除成功")
-          this.dialogFormVisible = false
-          this.load()
+        if(res.status === 200) {
+          this.$message.success("删除成功");
+          this.dialogFormVisible = false;
+          this.load();
         } else {
-          this.$message.error("删除失败")
+          this.$message.error(res.data || "删除失败");
         }
-      })
+      }).catch(err => {
+        this.$message.error("无法删除该部门，存在关联的教师记录");
+      });
     },
     closeDialog() {
       this.dialogFormVisible = false;

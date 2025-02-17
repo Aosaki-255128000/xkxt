@@ -164,12 +164,10 @@ export default {
         console.log(res)
         this.tableData = res.data
         this.total = res.total
+      }).catch(err => {
+        console.error("请求失败", err);
+        this.$message.error("数据加载失败，请稍后再试");
       })
-          .catch(
-              err => {
-                console.error("请求失败", err);
-                this.$message.error("数据加载失败，请稍后再试");
-              })
     },
     loadDepartments() {
       this.request
@@ -177,8 +175,7 @@ export default {
           .then((res) => {
             console.log(res);
             this.departments = res;
-          })
-          .catch((err) => {
+          }).catch((err) => {
             console.error("加载院系失败", err);
             this.$message.error("院系数据加载失败，请稍后再试");
           });
@@ -212,9 +209,11 @@ export default {
           this.dialogFormVisible = false
           this.load()
         } else {
-          this.$message.error("删除失败")
+          this.$message.error(res.data || "删除失败");
         }
-      })
+      }).catch(err => {
+        this.$message.error("无法删除该学生，存在关联的选课记录");
+      });
     },
 
     closeDialog() {

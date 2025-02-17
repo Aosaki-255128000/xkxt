@@ -321,7 +321,7 @@ export default {
 
         if (res.data.code === 200) {
           this.$message.success('退课成功');
-          this.load(); // 刷新列表
+          this.loadTimetable(); // 刷新列表
         } else {
           this.$message.error(res.data.message);
         }
@@ -391,13 +391,13 @@ export default {
   font-weight: bold;
 }
 .course-name {
-  font-size: 18px; /* 课程名大一点 */
+  font-size: 18px;
   font-weight: bold;
-  color: white; /* 白色 */
+  color: white;
 }
 
 .teacher-name {
-  font-size: 16px; /* 教师名小一点 */
-  color: white; /* 浅灰 */
+  font-size: 16px;
+  color: white;
 }
 </style>

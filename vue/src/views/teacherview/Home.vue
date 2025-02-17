@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1>欢迎您，{{ teacherName }}老师！这里是主页</h1>
+    <h1>欢迎您，{{ teacherName }}！这里是主页</h1>
   </div>
 </template>
 

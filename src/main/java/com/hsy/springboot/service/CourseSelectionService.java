@@ -70,4 +70,9 @@ public class CourseSelectionService {
     public List<CourseSelection> getStudentTimetable(String studentId, String semester) {
         return courseSelectionMapper.selectTimetableByStudent(studentId, semester);
     }
+
+    public Double calculateAverageTotalScore(String semester, String courseId, String jobNumber) {
+        return courseSelectionMapper.selectAverageTotalScore(semester, courseId, jobNumber);
+    }
+
 }

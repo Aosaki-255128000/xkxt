@@ -26,7 +26,14 @@
     <select id="selectCoursesByJobNumber" resultType="com.hsy.springboot.entity.OpenCourse">
         SELECT
             oc.*,
-            c.name AS courseName
+            c.name AS courseName,
+            COALESCE((
+                SELECT AVG(cs.totalScore)
+                FROM courseselection cs
+                WHERE cs.semester = oc.semester
+                AND cs.courseId = oc.courseId
+                AND cs.jobNumber = oc.jobNumber
+            ), 0) AS averageScore
         FROM opencourse oc
         LEFT JOIN course c ON oc.courseId = c.courseId
         WHERE oc.jobNumber = #{jobNumber}
@@ -97,7 +104,6 @@
         LIMIT #{pageNum}, #{pageSize}
     </select>
 
-
     <resultMap id="OpenCourseResultMap" type="com.hsy.springboot.entity.OpenCourse">
         <id property="id" column="id"/>
         <result property="semester" column="semester"/>
@@ -123,6 +129,14 @@
         WHERE semester=#{semester}
           AND courseId=#{courseId}
           AND jobNumber=#{jobNumber}
+    </select>
+
+    <select id="selectAverageTotalScore" resultType="Double">
+        SELECT AVG(cs.totalScore)
+        FROM courseselection cs
+        WHERE cs.semester = #{semester}
+          AND cs.courseId = #{courseId}
+          AND cs.jobNumber = #{jobNumber}
     </select>
 
 </mapper>
