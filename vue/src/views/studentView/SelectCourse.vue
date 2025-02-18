@@ -51,11 +51,18 @@
     </div>
 
     <div style="margin-bottom: 20px">
-      <el-select v-model="currentSemester" @change="loadTimetable">
+      <el-select v-model="currentSemester" @change="handleSemesterChange">
         <el-option label="2025-第一学期" value="202501"></el-option>
         <el-option label="2025-第二学期" value="202502"></el-option>
       </el-select>
     </div>
+
+    <!-- 总学分显示 -->
+    <el-row style="margin-bottom: 20px">
+      <el-col :span="24">
+        <span>当前学期选课总学分: <strong>{{ totalCredits }}</strong></span>
+      </el-col>
+    </el-row>
 
     <!-- 课程表容器 -->
     <template>
@@ -100,6 +107,7 @@ export default {
         total: 0,
         pageNum: 1,
         pageSize: 10,
+        totalCredits: 0,
         currentSemester: "202501",
         semester: "",
         courseId: "",
@@ -117,6 +125,7 @@ export default {
   created() {
     this.load();
     this.loadTimetable();
+    this.getTotalCredits();
   },
   methods: {
     load() {
@@ -154,13 +163,32 @@ export default {
           this.$message.error("数据格式错误，请联系管理员！");
           return;
         }
-
-        this.processTimetableData(res.data.data)
+        this.processTimetableData(res.data.data);
       }).catch(
           err => {
             console.error("请求失败", err);
             this.$message.error("数据加载失败，请稍后再试");
           })
+    },
+
+    // 获取总学分的方法
+    getTotalCredits() {
+      this.request.get("/courseSelection/totalCredits", {
+        params: {
+          semester: this.currentSemester
+        }
+      }).then(res => {
+        console.log("后端返回的学分：", res);
+        if (res.code === 200) {
+          // 更新总学分
+          this.totalCredits = res.data.data;
+        } else {
+          this.$message.error("获取总学分失败，请联系管理员");
+        }
+      }).catch(err => {
+        console.error("请求失败", err);
+        this.$message.error("获取总学分失败，请稍后再试");
+      });
     },
 
     processTimetableData(rawData) {
@@ -281,6 +309,7 @@ export default {
         );
         if (res.data.code === 200) {
           this.$message.success('选课成功');
+          this.getTotalCredits();
           this.loadTimetable(); // 刷新列表
         } else {
           this.$message.error(res.data.message);
@@ -321,6 +350,7 @@ export default {
 
         if (res.data.code === 200) {
           this.$message.success('退课成功');
+          this.getTotalCredits();
           this.loadTimetable(); // 刷新列表
         } else {
           this.$message.error(res.data.message);
@@ -329,6 +359,9 @@ export default {
         this.$message.error('退课失败');
       }
     },
+
+
+
 
 
     handleAdd() {
@@ -348,6 +381,12 @@ export default {
     handleSelectionChange(val) {
       console.log(val)
       this.multipleSelection = val
+    },
+
+    handleSemesterChange(newSemester) {
+      this.currentSemester = newSemester;
+      this.getTotalCredits(); // 每次切换学期时，重新获取总学分
+      this.loadTimetable(); // 重新加载选课数据
     },
 
     reset() {

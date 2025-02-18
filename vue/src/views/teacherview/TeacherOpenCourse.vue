@@ -10,7 +10,6 @@
 
     <el-table :data="tableData" border stripe :header-cell-class-name="headerBg" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55"></el-table-column>
-      <el-table-column prop="id" label="ID" width="80px"></el-table-column>
       <el-table-column prop="semester" label="学期"></el-table-column>
       <el-table-column prop="courseId" label="课号"></el-table-column>
       <el-table-column prop="courseName" label="课程名称"></el-table-column>

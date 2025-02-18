@@ -12,8 +12,9 @@ public class CourseSelection {
     private Integer usualPerformance;
     private Integer testScore;
     private Integer totalScore;
-
     private Double gpa;
+    private Integer credit;
+    private Integer totalCredits;
 
     private String courseName;
     private String studentName;

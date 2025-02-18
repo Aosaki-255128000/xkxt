@@ -126,7 +126,8 @@
             cs.courseId,
             c.name as courseName,
             oc.classTime,
-            t.name as teacherName
+            t.name as teacherName,
+            c.credit
         FROM courseselection cs
         LEFT JOIN opencourse oc ON
             cs.semester = oc.semester AND

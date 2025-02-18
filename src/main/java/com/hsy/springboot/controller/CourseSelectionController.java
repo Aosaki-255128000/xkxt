@@ -5,6 +5,7 @@ import com.hsy.springboot.entity.Course;
 import com.hsy.springboot.entity.CourseSelection;
 import com.hsy.springboot.entity.EnrollRequest;
 import com.hsy.springboot.entity.OpenCourse;
+import com.hsy.springboot.mapper.CourseMapper;
 import com.hsy.springboot.mapper.CourseSelectionMapper;
 import com.hsy.springboot.mapper.OpenCourseMapper;
 import com.hsy.springboot.service.CourseSelectionService;
@@ -29,6 +30,9 @@ public class CourseSelectionController {
 
     @Autowired
     private OpenCourseMapper openCourseMapper;
+
+    @Autowired
+    private CourseMapper courseMapper;
 
     @PostMapping
     public Integer save(@RequestBody CourseSelection courseSelection) { return courseSelectionService.save(courseSelection); }
@@ -138,6 +142,33 @@ public class CourseSelectionController {
         return Result.successWithData(selections);
 
     }
+
+    @GetMapping("/totalCredits")
+    public Result getTotalCredits(
+            @RequestHeader(value = "token") String token,
+            @RequestParam String semester) {
+
+        // 获取学生ID
+        DecodedJWT decodedJWT = JWTUtils.verifyToken(token);
+        String studentId = decodedJWT.getClaim("code").asString();
+
+        // 查询选课数据（包括课程学分）
+        List<CourseSelection> selections = courseSelectionService.getStudentTimetable(studentId, semester);
+
+        // 计算总学分
+        int totalCredits = 0;
+        for (CourseSelection selection : selections) {
+            // 你可以通过关联查询或者直接使用 CourseSelection 中的学分字段来获取学分
+            String courseId = selection.getCourseId();
+            Course course = courseMapper.getCourseById(courseId); // 你需要在 courseMapper 中增加这个方法
+            if (course != null) {
+                totalCredits += course.getCredit(); // 假设 Course 类中有 credit 字段
+            }
+        }
+        // 返回总学分
+        return Result.successWithData(totalCredits);
+    }
+
 
     // 选课
     @PostMapping("/enroll")

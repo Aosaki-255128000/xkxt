@@ -97,4 +97,7 @@ public interface CourseMapper {
 
     @Select("select * from course where dptId = #{dptId}")
     List<Course> findByDepartmentId(Integer departmentId);
+
+    @Select("select credit from course where courseId=#{courseId}")
+    Course getCourseById(String courseId);
 }
