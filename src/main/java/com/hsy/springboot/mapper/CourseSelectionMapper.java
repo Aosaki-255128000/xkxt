@@ -88,4 +88,8 @@ public interface CourseSelectionMapper {
 
 
     Double selectAverageTotalScore(String semester, String courseId, String jobNumber);
+
+    @Select("SELECT COUNT(*) FROM courseselection WHERE studentId = #{studentId} AND courseId = #{courseId} AND jobNumber = #{jobNumber}")
+    int countByStudentCourseAndTeacher(String studentId, String courseId, String jobNumber);
+
 }

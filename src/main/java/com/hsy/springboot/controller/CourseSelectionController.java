@@ -168,6 +168,12 @@ public class CourseSelectionController {
             return Result.errorPrint("课程时间格式不正确");
         }
 
+        // 检查是否已选过该课程
+        int count = courseSelectionMapper.countByStudentCourseAndTeacher(studentId, enrollRequest.getCourseId(), enrollRequest.getJobNumber());
+        if (count > 0) {
+            return Result.errorPrint("无法重复选课！");
+        }
+
         // 冲突检测
         List<CourseSelection> selectedCourses = courseSelectionMapper.selectTimetableByStudent(
                 studentId,
