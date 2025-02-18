@@ -48,13 +48,28 @@
     <el-dialog title="成绩填入" :visible.sync="dialogFormVisible">
       <el-form label-width="100px" size="small">
         <el-form-item label="平时成绩">
-          <el-input v-model="form.usualPerformance" autocomplete="off" style="width: 200px"></el-input>
+          <el-input
+              v-model.number="form.usualPerformance"
+              autocomplete="off"
+              style="width: 200px"
+              @input="validateScore('usualPerformance')"
+          ></el-input>
         </el-form-item>
         <el-form-item label="考试成绩">
-          <el-input v-model="form.testScore" autocomplete="off" style="width: 200px"></el-input>
+          <el-input
+              v-model.number="form.testScore"
+              autocomplete="off"
+              style="width: 200px"
+              @input="validateScore('testScore')"
+          ></el-input>
         </el-form-item>
         <el-form-item label="总评成绩">
-          <el-input v-model="form.totalScore" autocomplete="off" style="width: 200px"></el-input>
+          <el-input
+              v-model.number="form.totalScore"
+              autocomplete="off"
+              style="width: 200px"
+              @input="validateScore('totalScore')"
+          ></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -165,6 +180,17 @@ export default {
       console.log(pageNum)
       this.pageNum = pageNum
       this.load()
+    },
+
+    validateScore(field) {
+      let value = this.form[field];
+      if (value < 0) {
+        this.$message.warning("成绩不能小于0");
+        this.form[field] = 0; // 自动修正为0
+      } else if (value > 100) {
+        this.$message.warning("成绩不能大于100");
+        this.form[field] = 100; // 自动修正为100
+      }
     },
   }
 }

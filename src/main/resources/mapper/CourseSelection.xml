@@ -71,7 +71,25 @@
         SELECT
         cs.*,
         c.name AS courseName,
-        t.name AS teacherName
+        t.name AS teacherName,
+        c.credit,
+        c.creditHour,
+        CASE
+            WHEN cs.totalScore IS NOT NULL THEN
+                CASE
+                    WHEN cs.totalScore >= 90 THEN 4.0
+                    WHEN cs.totalScore >= 85 THEN 3.7
+                    WHEN cs.totalScore >= 82 THEN 3.3
+                    WHEN cs.totalScore >= 78 THEN 3.0
+                    WHEN cs.totalScore >= 75 THEN 2.7
+                    WHEN cs.totalScore >= 72 THEN 2.3
+                    WHEN cs.totalScore >= 68 THEN 2.0
+                    WHEN cs.totalScore >= 64 THEN 1.7
+                    WHEN cs.totalScore >= 60 THEN 1.3
+                    ELSE 0.0
+                END
+            ELSE NULL  -- 如果 totalScore 为 null，返回 null
+        END AS gpa
         FROM courseselection cs
         LEFT JOIN course c ON cs.courseId = c.courseId
         LEFT JOIN teacher t ON cs.jobNumber = t.jobNumber

@@ -163,11 +163,24 @@ public class CourseSelectionController {
                 enrollRequest.getJobNumber()
         );
 
+        // 检查课程时间格式是否有效
+        if (courseTime == null || courseTime.getClassTime() == null || courseTime.getClassTime().isEmpty()) {
+            return Result.errorPrint("课程时间格式不正确");
+        }
+
         // 冲突检测
         List<CourseSelection> selectedCourses = courseSelectionMapper.selectTimetableByStudent(
                 studentId,
                 enrollRequest.getSemester()
         );
+
+        // 检查已选课程的时间格式
+        for (CourseSelection sc : selectedCourses) {
+            if (sc.getClassTime() == null || sc.getClassTime().isEmpty()) {
+                return Result.errorPrint("已选课程时间格式不正确");
+            }
+        }
+
         if (hasTimeConflict(courseTime.getClassTime(), selectedCourses)) {
             return Result.errorPrint("课程时间冲突");
         }
@@ -183,6 +196,7 @@ public class CourseSelectionController {
         return Result.success();
     }
 
+
     // 时间冲突检查
     private boolean hasTimeConflict(String newTime, List<CourseSelection> selectedCourses) {
 
@@ -191,28 +205,53 @@ public class CourseSelectionController {
         }
 
         // 解析新的课程时间
-        String[] newParts = newTime.split("星期|\\D+");  // 修改正则表达式，确保正确解析时间部分
-        String newDay = newParts[1];
-        int newStart = Integer.parseInt(newParts[2].split("-")[0]);
-        int newEnd = Integer.parseInt(newParts[2].split("-")[1]);
+        String[] newParts = newTime.split("星期|\\D+");  // 确保正确解析时间部分
+        if (newParts.length < 3) {
+            System.out.println("Invalid new time format: " + newTime);  // 打印调试信息
+            return false;  // 如果格式不正确，直接返回没有冲突
+        }
 
+        // 调试：打印新课程时间的解析结果
+        String newDay = newParts[1];
+        String[] timeParts = newParts[2].split("-");
+        if (timeParts.length < 2) {
+            System.out.println("Invalid time range format: " + newParts[2]);
+            return false;  // 返回没有时间冲突
+        }
+
+        int newStart = Integer.parseInt(timeParts[0]);
+        int newEnd = Integer.parseInt(timeParts[1]);
+
+        System.out.println("New Time Parsed: Day = " + newDay + ", Start = " + newStart + ", End = " + newEnd);
+
+        // 遍历已选课程，检查是否有冲突
         for (CourseSelection sc : selectedCourses) {
             // 解析已选课程的时间
             String[] existParts = sc.getClassTime().split("星期|\\D+");
+            if (existParts.length < 3) {
+                System.out.println("Invalid existing course time format: " + sc.getClassTime());  // 打印调试信息
+                continue;  // 如果已选课程的时间格式不对，跳过
+            }
+
+            // 调试：打印已选课程的时间解析结果
             String existDay = existParts[1];
             int existStart = Integer.parseInt(existParts[2].split("-")[0]);
             int existEnd = Integer.parseInt(existParts[2].split("-")[1]);
+            System.out.println("Existing Course Parsed: Day = " + existDay + ", Start = " + existStart + ", End = " + existEnd);
 
             // 判断是否是同一天
             if (newDay.equals(existDay)) {
                 // 判断时间是否重叠
                 if (newStart <= existEnd && newEnd >= existStart) {
+                    System.out.println("Time Conflict Detected: New Time (" + newStart + "-" + newEnd + ") conflicts with Existing Time (" + existStart + "-" + existEnd + ")");
                     return true;  // 有时间冲突
                 }
             }
         }
+
         return false;  // 没有时间冲突
     }
+
 
     // 退课
     @DeleteMapping("/withdraw")
