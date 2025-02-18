@@ -41,7 +41,7 @@ const routes = [
     component: () => import('../views/StudentView.vue'),
     redirect: '/studentHome',
     children: [
-      { path: '/studentHome', name: 'Home', component: () => import('../views/studentView/Home.vue')},
+      { path: '/studentHome', name: 'Home', component: () => import('../views/studentView/StudentHome.vue')},
       { path: '/studentScore', name: 'Score', component: () => import('../views/studentView/Score.vue')},
       { path: '/studentSelectCourse', name: 'Select', component: () => import('../views/studentView/SelectCourse.vue')},
     ]
@@ -51,7 +51,7 @@ const routes = [
     component: () => import('../views/TeacherView.vue'),
     redirect: '/teacherHome',
     children: [
-      { path: '/teacherHome', name: 'Home', component: () => import('../views/teacherview/Home.vue') },
+      { path: '/teacherHome', name: 'Home', component: () => import('../views/teacherview/TeacherHome.vue') },
       { path: '/teacherDepartment', name: 'Department', component: () => import('../views/teacherview/TeacherDepartment.vue') },
       { path: '/teacherCourse', name: 'OpenCourse', component: () => import('../views/teacherview/TeacherOpenCourse.vue') },
       { path: '/teacherScore', name: 'Score', component: () => import('../views/teacherview/StudentScore.vue') },

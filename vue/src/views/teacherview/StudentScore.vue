@@ -77,10 +77,22 @@
       </div>
     </el-dialog>
 
+    <!-- 成绩分布图区域 -->
+    <div v-if="chartVisible" style="margin-top: 20px;">
+      <el-row :gutter="20">
+        <!-- 遍历分组后的课程数据 -->
+        <el-col :span="8" v-for="course in groupedCourses" :key="course.courseId">
+          <div :id="'chart-' + course.courseId" style="width: 400px; height: 400px;"></div>
+        </el-col>
+      </el-row>
+    </div>
+
   </div>
 </template>
 
 <script>
+import * as echarts from 'echarts';
+
 export default {
   name: "StudentScore",
   data() {
@@ -100,6 +112,7 @@ export default {
       dialogFormVisible: false,
       multipleSelection: [],
       headerBg: 'headerBg',
+      chartVisible: false,
     }
   },
   created() {
@@ -118,12 +131,19 @@ export default {
           courseName: this.courseName,
           usualPerformance: this.usualPerformance,
           testScore: this.testScore,
-          totalScore: this.totalScore
+          totalScore: this.totalScore,
+          chartVisible: false,
         }
       }).then(res => {
         console.log(res)
         this.tableData = res.data
         this.total = res.total
+        this.chartVisible = true;
+        // 使用 nextTick 确保 DOM 渲染后再初始化图表
+        this.$nextTick(() => {
+          // 绘制每门课程的成绩分布图
+          this.drawScoreCharts(res.data);
+        });
       }).catch(
           err => {
             console.log("请求失败", err);
@@ -191,6 +211,104 @@ export default {
         this.form[field] = 100; // 自动修正为100
       }
     },
+
+// 绘制成绩分布图
+    drawScoreCharts() {
+      this.groupedCourses.forEach(course => {
+        const chartDom = document.getElementById(`chart-${course.courseId}`);
+        if (!chartDom) return;
+
+        const chart = echarts.init(chartDom);
+
+        // 定义分数段（可调整区间）
+        const scoreRanges = [
+          { min: 0, max: 59, label: '0-59' },
+          { min: 60, max: 69, label: '60-69' },
+          { min: 70, max: 79, label: '70-79' },
+          { min: 80, max: 89, label: '80-89' },
+          { min: 90, max: 100, label: '90-100' }
+        ];
+
+        // 统计各分数段人数，过滤掉null或undefined成绩
+        const countStudents = (scores) => {
+          return scoreRanges.map(range => {
+            return scores.filter(s => s != null && s >= range.min && s <= range.max).length;
+          });
+        };
+
+        // 获取三类成绩数据
+        const usual = course.students.map(s => s.usualPerformance);
+        const test = course.students.map(s => s.testScore);
+        const total = course.students.map(s => s.totalScore);
+
+        // ECharts配置
+        const option = {
+          title: {
+            text: `${course.courseName} 成绩分布`,
+            left: 'center'
+          },
+          tooltip: { trigger: 'axis' },
+          legend: {
+            data: ['平时成绩', '考试成绩', '总评成绩'],
+            bottom: 0
+          },
+          xAxis: {
+            type: 'category',
+            data: scoreRanges.map(r => r.label),
+            name: '分数区间'
+          },
+          yAxis: {
+            type: 'value',
+            name: '学生人数'
+          },
+          series: [
+            {
+              name: '平时成绩',
+              type: 'line',
+              smooth: true,
+              data: countStudents(usual)
+            },
+            {
+              name: '考试成绩',
+              type: 'line',
+              smooth: true,
+              data: countStudents(test)
+            },
+            {
+              name: '总评成绩',
+              type: 'line',
+              smooth: true,
+              data: countStudents(total)
+            }
+          ]
+        };
+
+        chart.setOption(option);
+
+        // 窗口resize时自适应
+        window.addEventListener('resize', () => chart.resize());
+
+      });
+    },
+
+  },
+  computed: {
+    // 按课程ID分组计算属性
+    groupedCourses() {
+      const groups = {};
+      this.tableData.forEach(item => {
+        const key = item.courseId;
+        if (!groups[key]) {
+          groups[key] = {
+            courseId: key,
+            courseName: item.courseName,
+            students: [] // 存储该课程所有学生成绩
+          };
+        }
+        groups[key].students.push(item);
+      });
+      return Object.values(groups);
+    }
   }
 }
 </script>
