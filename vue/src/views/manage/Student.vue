@@ -16,7 +16,6 @@
 
     <el-table :data="tableData" border stripe :header-cell-class-name="headerBg" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55"></el-table-column>
-      <el-table-column prop="id" label="ID" width="80px"></el-table-column>
       <el-table-column prop="username" label="学生用户名" width="140"></el-table-column>
       <el-table-column prop="name" label="姓名" width="120"></el-table-column>
       <el-table-column prop="role" label="角色"></el-table-column>

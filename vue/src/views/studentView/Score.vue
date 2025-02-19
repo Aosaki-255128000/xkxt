@@ -59,6 +59,7 @@ export default {
       testScore: null,
       totalScore: null,
       totalGpa: 0,
+      totalCredits: 0,
       form: "",
       dialogFormVisible: false,
       multipleSelection: [],
@@ -88,20 +89,21 @@ export default {
         this.tableData = res.data
         this.total = res.total
 
-        // 计算总绩点
+        // 计算加权平均绩点
         let totalGpa = 0;
-        let totalCourses = 0;
+        let totalCredits = 0;
 
         this.tableData.forEach(item => {
           if (item.totalScore == null || item.totalScore === '') {
             return;
           }
-          totalGpa += item.gpa;
-          totalCourses++;
+          // 计算加权绩点
+          totalGpa += item.gpa * item.credit;  // 将 GPA 按照 credit 加权
+          totalCredits += item.credit;  // 累加课程学分
         });
 
-        if(totalCourses > 0) {
-          this.totalGpa = (totalGpa / totalCourses).toFixed(2);
+        if(totalCredits > 0) {
+          this.totalGpa = (totalGpa / totalCredits).toFixed(2);
         } else {
           this.totalGpa = 0;
         }
